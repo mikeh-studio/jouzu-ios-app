@@ -1,0 +1,592 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E0F5BF2C9779FF68198E586 /* AnalysisResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6894F77B3E9FA950DEE1CC15 /* AnalysisResult.swift */; };
+		17E6F8CA2DD8F2225C76BAF6 /* WordPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFD72C26660C4C68E1CDD2E /* WordPopoverView.swift */; };
+		327895FC0BFDD871D3195562 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87EA8EA6A5F9792FCC0AA854 /* CameraView.swift */; };
+		3CF18CE03E639822AA96017E /* GrammarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD5E6D56AFEE4F3D9FE8CBC /* GrammarService.swift */; };
+		3E8BB2B5F26266AC37B53874 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2ACA2581DEE7EB790D9623 /* CameraViewModel.swift */; };
+		482CEA492274CC6C7123D437 /* PreviewSampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F3D741BCA5000471A41761 /* PreviewSampleData.swift */; };
+		9346AF801297CD1540779DE2 /* JouzuApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE897B3247E84A3F958704D /* JouzuApp.swift */; };
+		AAE25E5F4F726FFA6248C1D2 /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9FB00229B1C89104AEB1A /* OCRService.swift */; };
+		AC767FBE2235706D76A8BDE3 /* DictionaryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487A64D1B8D087B00C36A3F4 /* DictionaryService.swift */; };
+		AE55469CBE0D9F6F8D6A7732 /* AnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9386D8895A66181338C95408 /* AnalysisView.swift */; };
+		B4FEF23A95153C6B17141805 /* TokenizerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63EF1FB8397772F138E7AAA8 /* TokenizerService.swift */; };
+		B5AE12D7ED12891AB8A3078A /* SM2Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD56EC16DE7EDFB0F31F17AF /* SM2Algorithm.swift */; };
+		B6A819111DE684296A71E047 /* GrammarHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12A2672241280E13FCAD39E5 /* GrammarHighlighter.swift */; };
+		B7E49857D020C3BD1A25E583 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19B7343725667BF55DFF9DF /* ContentView.swift */; };
+		C00B0DB85A86F2EFCEC405D5 /* SM2AlgorithmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D9F200CD178A24005A85C5 /* SM2AlgorithmTests.swift */; };
+		C45EC7204B00DD4051F93BA6 /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BA1D562B9FCE55A91A5B85 /* ReviewView.swift */; };
+		C949022CE22F0DE582351D5E /* IPADic in Frameworks */ = {isa = PBXBuildFile; productRef = D6CF57FDBEE726A3D12E28E6 /* IPADic */; };
+		D1BDDA82492A90D32F1F46B4 /* AnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5B0723BA6000946551F0EE /* AnalysisViewModel.swift */; };
+		D4B420C43678712E11E2369E /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B6E142A4A190DD20E47727 /* Token.swift */; };
+		E16BC1F103FAC4F58D9BAC86 /* Mecab-Swift in Frameworks */ = {isa = PBXBuildFile; productRef = F5BAA1C7C37C7C351885F26B /* Mecab-Swift */; };
+		EDE9775EDFAFAEE8C81E0B0B /* VocabListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FB41CB9EC0E7D149ABA5FC /* VocabListView.swift */; };
+		FA57B6913265C76E33591E97 /* VocabCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7549F9B07DCA828CC043F0 /* VocabCard.swift */; };
+		FE843FC6EED2B6A3B9E25483 /* ReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C5DCE6FB7F788D8A3DA183 /* ReviewViewModel.swift */; };
+		FE84B10FFA450C26C0E61A57 /* VocabListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FD909C9C16F66ACECB876B /* VocabListViewModel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4CDC086C32963F3B0FB9A2A5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A7103101B237F9D8D36384D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 74A6D7C6B579571DDDEE7A43;
+			remoteInfo = Jouzu;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		05FB41CB9EC0E7D149ABA5FC /* VocabListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabListView.swift; sourceTree = "<group>"; };
+		0A7F90CCC78EF3878609269B /* Jouzu.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Jouzu.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0D2ACA2581DEE7EB790D9623 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
+		12A2672241280E13FCAD39E5 /* GrammarHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrammarHighlighter.swift; sourceTree = "<group>"; };
+		18BA1D562B9FCE55A91A5B85 /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
+		37D9F200CD178A24005A85C5 /* SM2AlgorithmTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SM2AlgorithmTests.swift; sourceTree = "<group>"; };
+		37FD909C9C16F66ACECB876B /* VocabListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabListViewModel.swift; sourceTree = "<group>"; };
+		487A64D1B8D087B00C36A3F4 /* DictionaryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryService.swift; sourceTree = "<group>"; };
+		5BA26CF56CB6387BB6B415DB /* JouzuTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = JouzuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C7549F9B07DCA828CC043F0 /* VocabCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabCard.swift; sourceTree = "<group>"; };
+		5F5B0723BA6000946551F0EE /* AnalysisViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisViewModel.swift; sourceTree = "<group>"; };
+		5FFD72C26660C4C68E1CDD2E /* WordPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordPopoverView.swift; sourceTree = "<group>"; };
+		60D9FB00229B1C89104AEB1A /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
+		63EF1FB8397772F138E7AAA8 /* TokenizerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenizerService.swift; sourceTree = "<group>"; };
+		646DAC140834EA33CF4DED91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		6894F77B3E9FA950DEE1CC15 /* AnalysisResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisResult.swift; sourceTree = "<group>"; };
+		78F3D741BCA5000471A41761 /* PreviewSampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSampleData.swift; sourceTree = "<group>"; };
+		7BD5E6D56AFEE4F3D9FE8CBC /* GrammarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrammarService.swift; sourceTree = "<group>"; };
+		87EA8EA6A5F9792FCC0AA854 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		8AE897B3247E84A3F958704D /* JouzuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JouzuApp.swift; sourceTree = "<group>"; };
+		9386D8895A66181338C95408 /* AnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisView.swift; sourceTree = "<group>"; };
+		94B6E142A4A190DD20E47727 /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
+		A19B7343725667BF55DFF9DF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F4C5DCE6FB7F788D8A3DA183 /* ReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewViewModel.swift; sourceTree = "<group>"; };
+		FD56EC16DE7EDFB0F31F17AF /* SM2Algorithm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SM2Algorithm.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C594CA8E770E87C0AE743051 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E16BC1F103FAC4F58D9BAC86 /* Mecab-Swift in Frameworks */,
+				C949022CE22F0DE582351D5E /* IPADic in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1C1C2C0DA44C4350AF1DCB84 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				87EA8EA6A5F9792FCC0AA854 /* CameraView.swift */,
+				0D2ACA2581DEE7EB790D9623 /* CameraViewModel.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		2292D9CD1BDB8C241B08DB4D /* Analysis */ = {
+			isa = PBXGroup;
+			children = (
+				9386D8895A66181338C95408 /* AnalysisView.swift */,
+				5F5B0723BA6000946551F0EE /* AnalysisViewModel.swift */,
+				12A2672241280E13FCAD39E5 /* GrammarHighlighter.swift */,
+				5FFD72C26660C4C68E1CDD2E /* WordPopoverView.swift */,
+			);
+			path = Analysis;
+			sourceTree = "<group>";
+		};
+		345E0EFB37D7FB3F4A629F40 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				487A64D1B8D087B00C36A3F4 /* DictionaryService.swift */,
+				7BD5E6D56AFEE4F3D9FE8CBC /* GrammarService.swift */,
+				60D9FB00229B1C89104AEB1A /* OCRService.swift */,
+				63EF1FB8397772F138E7AAA8 /* TokenizerService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		35A342F72EB619CED72E386D /* App */ = {
+			isa = PBXGroup;
+			children = (
+				A19B7343725667BF55DFF9DF /* ContentView.swift */,
+				8AE897B3247E84A3F958704D /* JouzuApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		5E532DEA8A63EC651D17E722 /* VocabList */ = {
+			isa = PBXGroup;
+			children = (
+				05FB41CB9EC0E7D149ABA5FC /* VocabListView.swift */,
+				37FD909C9C16F66ACECB876B /* VocabListViewModel.swift */,
+			);
+			path = VocabList;
+			sourceTree = "<group>";
+		};
+		75B56E3517768EDAF90DF450 /* JouzuTests */ = {
+			isa = PBXGroup;
+			children = (
+				37D9F200CD178A24005A85C5 /* SM2AlgorithmTests.swift */,
+			);
+			path = JouzuTests;
+			sourceTree = "<group>";
+		};
+		8F6871A38EE223DA978FC952 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0A7F90CCC78EF3878609269B /* Jouzu.app */,
+				5BA26CF56CB6387BB6B415DB /* JouzuTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A2B4BBE7951A63C6EF1B6245 = {
+			isa = PBXGroup;
+			children = (
+				B1B258E8A059F88E16555D79 /* Jouzu */,
+				75B56E3517768EDAF90DF450 /* JouzuTests */,
+				8F6871A38EE223DA978FC952 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A65F346926F46AC3DF182E68 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				2292D9CD1BDB8C241B08DB4D /* Analysis */,
+				1C1C2C0DA44C4350AF1DCB84 /* Camera */,
+				F6CF5D0757B053DE090F0673 /* Review */,
+				5E532DEA8A63EC651D17E722 /* VocabList */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		B1B258E8A059F88E16555D79 /* Jouzu */ = {
+			isa = PBXGroup;
+			children = (
+				646DAC140834EA33CF4DED91 /* Info.plist */,
+				35A342F72EB619CED72E386D /* App */,
+				A65F346926F46AC3DF182E68 /* Features */,
+				F3171AF11708814899D73D67 /* Models */,
+				345E0EFB37D7FB3F4A629F40 /* Services */,
+			);
+			path = Jouzu;
+			sourceTree = "<group>";
+		};
+		F3171AF11708814899D73D67 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6894F77B3E9FA950DEE1CC15 /* AnalysisResult.swift */,
+				78F3D741BCA5000471A41761 /* PreviewSampleData.swift */,
+				94B6E142A4A190DD20E47727 /* Token.swift */,
+				5C7549F9B07DCA828CC043F0 /* VocabCard.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F6CF5D0757B053DE090F0673 /* Review */ = {
+			isa = PBXGroup;
+			children = (
+				18BA1D562B9FCE55A91A5B85 /* ReviewView.swift */,
+				F4C5DCE6FB7F788D8A3DA183 /* ReviewViewModel.swift */,
+				FD56EC16DE7EDFB0F31F17AF /* SM2Algorithm.swift */,
+			);
+			path = Review;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4CAC92BD0E2F248381566FB9 /* JouzuTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 730C9ECCC6AAF666BAE2F383 /* Build configuration list for PBXNativeTarget "JouzuTests" */;
+			buildPhases = (
+				8EFDDD7643F37F398D5A2800 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				55DEB463AEA74AC57EC0B5B7 /* PBXTargetDependency */,
+			);
+			name = JouzuTests;
+			packageProductDependencies = (
+			);
+			productName = JouzuTests;
+			productReference = 5BA26CF56CB6387BB6B415DB /* JouzuTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		74A6D7C6B579571DDDEE7A43 /* Jouzu */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7BFFC303E3C95AC65A957EA8 /* Build configuration list for PBXNativeTarget "Jouzu" */;
+			buildPhases = (
+				5253DFD5137DDB1A85A85D58 /* Sources */,
+				C594CA8E770E87C0AE743051 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Jouzu;
+			packageProductDependencies = (
+				F5BAA1C7C37C7C351885F26B /* Mecab-Swift */,
+				D6CF57FDBEE726A3D12E28E6 /* IPADic */,
+			);
+			productName = Jouzu;
+			productReference = 0A7F90CCC78EF3878609269B /* Jouzu.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9A7103101B237F9D8D36384D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					4CAC92BD0E2F248381566FB9 = {
+						DevelopmentTeam = "";
+					};
+					74A6D7C6B579571DDDEE7A43 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 390EC1E70DF9ECB50728B467 /* Build configuration list for PBXProject "Jouzu" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = A2B4BBE7951A63C6EF1B6245;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F138B5732FEF14BD82A252F4 /* XCRemoteSwiftPackageReference "Mecab-Swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				74A6D7C6B579571DDDEE7A43 /* Jouzu */,
+				4CAC92BD0E2F248381566FB9 /* JouzuTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5253DFD5137DDB1A85A85D58 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E0F5BF2C9779FF68198E586 /* AnalysisResult.swift in Sources */,
+				AE55469CBE0D9F6F8D6A7732 /* AnalysisView.swift in Sources */,
+				D1BDDA82492A90D32F1F46B4 /* AnalysisViewModel.swift in Sources */,
+				327895FC0BFDD871D3195562 /* CameraView.swift in Sources */,
+				3E8BB2B5F26266AC37B53874 /* CameraViewModel.swift in Sources */,
+				B7E49857D020C3BD1A25E583 /* ContentView.swift in Sources */,
+				AC767FBE2235706D76A8BDE3 /* DictionaryService.swift in Sources */,
+				B6A819111DE684296A71E047 /* GrammarHighlighter.swift in Sources */,
+				3CF18CE03E639822AA96017E /* GrammarService.swift in Sources */,
+				9346AF801297CD1540779DE2 /* JouzuApp.swift in Sources */,
+				AAE25E5F4F726FFA6248C1D2 /* OCRService.swift in Sources */,
+				482CEA492274CC6C7123D437 /* PreviewSampleData.swift in Sources */,
+				C45EC7204B00DD4051F93BA6 /* ReviewView.swift in Sources */,
+				FE843FC6EED2B6A3B9E25483 /* ReviewViewModel.swift in Sources */,
+				B5AE12D7ED12891AB8A3078A /* SM2Algorithm.swift in Sources */,
+				D4B420C43678712E11E2369E /* Token.swift in Sources */,
+				B4FEF23A95153C6B17141805 /* TokenizerService.swift in Sources */,
+				FA57B6913265C76E33591E97 /* VocabCard.swift in Sources */,
+				EDE9775EDFAFAEE8C81E0B0B /* VocabListView.swift in Sources */,
+				FE84B10FFA450C26C0E61A57 /* VocabListViewModel.swift in Sources */,
+				17E6F8CA2DD8F2225C76BAF6 /* WordPopoverView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8EFDDD7643F37F398D5A2800 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C00B0DB85A86F2EFCEC405D5 /* SM2AlgorithmTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		55DEB463AEA74AC57EC0B5B7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 74A6D7C6B579571DDDEE7A43 /* Jouzu */;
+			targetProxy = 4CDC086C32963F3B0FB9A2A5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0FDFB36125284E0F943B4242 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		1001E1DD47AABE363031C643 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		17FBE31ECDC3F60C753E03D6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jouzu.JouzuTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Jouzu.app/Jouzu";
+			};
+			name = Release;
+		};
+		1E267648DF6E17E736944E41 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jouzu.JouzuTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Jouzu.app/Jouzu";
+			};
+			name = Debug;
+		};
+		339BC4A3B3CE4BE369C78FA2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = Jouzu/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Jouzu;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Jouzu needs camera access to photograph Japanese text for translation and vocabulary building.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Jouzu needs photo library access to import images of Japanese text.";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jouzu.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3914C5C47F971EECB5263831 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = Jouzu/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Jouzu;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Jouzu needs camera access to photograph Japanese text for translation and vocabulary building.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Jouzu needs photo library access to import images of Japanese text.";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jouzu.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		390EC1E70DF9ECB50728B467 /* Build configuration list for PBXProject "Jouzu" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0FDFB36125284E0F943B4242 /* Debug */,
+				1001E1DD47AABE363031C643 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		730C9ECCC6AAF666BAE2F383 /* Build configuration list for PBXNativeTarget "JouzuTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1E267648DF6E17E736944E41 /* Debug */,
+				17FBE31ECDC3F60C753E03D6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7BFFC303E3C95AC65A957EA8 /* Build configuration list for PBXNativeTarget "Jouzu" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				339BC4A3B3CE4BE369C78FA2 /* Debug */,
+				3914C5C47F971EECB5263831 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F138B5732FEF14BD82A252F4 /* XCRemoteSwiftPackageReference "Mecab-Swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/shinjukunian/Mecab-Swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D6CF57FDBEE726A3D12E28E6 /* IPADic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F138B5732FEF14BD82A252F4 /* XCRemoteSwiftPackageReference "Mecab-Swift" */;
+			productName = IPADic;
+		};
+		F5BAA1C7C37C7C351885F26B /* Mecab-Swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F138B5732FEF14BD82A252F4 /* XCRemoteSwiftPackageReference "Mecab-Swift" */;
+			productName = "Mecab-Swift";
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 9A7103101B237F9D8D36384D /* Project object */;
+}

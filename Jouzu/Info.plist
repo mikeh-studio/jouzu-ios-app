@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>NSCameraUsageDescription</key>
+    <string>Jouzu needs camera access to photograph Japanese text for translation and vocabulary building.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Jouzu needs photo library access to import images of Japanese text.</string>
+</dict>
+</plist>

@@ -1,0 +1,23 @@
+# Xcode
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# macOS
+.DS_Store
+
+# CocoaPods (if ever used)
+Pods/
+
+# Claude Code
+.claude/
+
+# Misc
+*.ipa
+*.dSYM.zip
+*.dSYM
