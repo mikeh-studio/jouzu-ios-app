@@ -1,4 +1,4 @@
-# Jouzu
+# Jouzu - Japanese Flashcard App with Camera OCR
 
 Learn Japanese by snapping photos of real-world text.
 
@@ -17,7 +17,11 @@ Jouzu is an iOS app that helps you learn Japanese from real-world text. Snap a p
 
 ## Screenshots
 
-*Coming soon*
+<p align="center">
+  <img src="Screenshots/home_wip.png" alt="Home screen" width="300">
+  <br>
+  <em>Work in progress</em>
+</p>
 
 ## Requirements
 
