@@ -9,11 +9,18 @@ Jouzu is an iOS app that helps you learn Japanese from real-world text. Snap a p
 ## Features
 
 - **Camera OCR** - Recognize Japanese text from photos using the Vision framework
-- **Tokenization** - Split text into words with MeCab morphological analysis
-- **Color-coded grammar** - Parts of speech highlighted at a glance (nouns, verbs, particles, etc.)
+- **Tokenization + filtering** - Split text with MeCab, then keep Japanese words only (non-Japanese tokens removed)
+- **Focused words view** - Capture analysis shows lexical words only (particles hidden)
+- **Color-coded grammar** - Parts of speech highlighted at a glance for visible words
 - **Dictionary lookup** - Tap any word for definitions, readings, and inflection details
-- **On-device translation** - Full sentence translation via Apple's Translation framework
+- **On-device translation fallback** - Translation framework is used to backfill missing word definitions
 - **Spaced repetition** - Save vocabulary to a built-in review system using the SM-2 algorithm
+
+## Today's Update (March 7, 2026)
+
+- Removed **Recognized Text** and **Translation** sections from the capture analysis screen.
+- Added filtering so non-Japanese tokens are removed before word enrichment/display.
+- Updated the **Words** section to show lexical words only and hide particles.
 
 ## Screenshots
 
@@ -49,7 +56,7 @@ xcodebuild -scheme Jouzu -configuration Debug -destination 'platform=iOS Simulat
 MVVM with feature-based modules. The processing pipeline:
 
 ```text
-Camera -> OCR (Vision) -> Tokenize (MeCab) -> Dictionary -> Grammar -> Translate -> Display
+Camera -> OCR (Vision) -> Tokenize (MeCab) -> Filter (Japanese words only, no particles) -> Dictionary -> Grammar -> Optional definition translation fallback -> Display
 ```
 
 Each feature (Camera, Analysis, Vocabulary, Review) has its own View + ViewModel pair under `Jouzu/Features/`.

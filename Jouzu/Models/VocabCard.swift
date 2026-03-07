@@ -8,7 +8,7 @@ final class VocabCard {
     var reading: String
     var definition: String
     var partOfSpeech: String
-    var exampleSentence: String
+    var exampleSentence: String?
     var sourceImageData: Data?
 
     // SM-2 SRS fields
@@ -25,7 +25,7 @@ final class VocabCard {
         reading: String,
         definition: String,
         partOfSpeech: String,
-        exampleSentence: String,
+        exampleSentence: String? = nil,
         sourceImageData: Data? = nil,
         deckName: String = "Default"
     ) {

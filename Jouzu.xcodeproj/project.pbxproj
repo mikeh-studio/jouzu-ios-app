@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB12CD34EF56AB78CD90EF12 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB12CD34EF56AB78CD90EF13 /* Assets.xcassets */; };
 		0E0F5BF2C9779FF68198E586 /* AnalysisResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6894F77B3E9FA950DEE1CC15 /* AnalysisResult.swift */; };
 		17E6F8CA2DD8F2225C76BAF6 /* WordPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFD72C26660C4C68E1CDD2E /* WordPopoverView.swift */; };
 		327895FC0BFDD871D3195562 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87EA8EA6A5F9792FCC0AA854 /* CameraView.swift */; };
@@ -31,6 +32,7 @@
 		FA57B6913265C76E33591E97 /* VocabCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7549F9B07DCA828CC043F0 /* VocabCard.swift */; };
 		FE843FC6EED2B6A3B9E25483 /* ReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C5DCE6FB7F788D8A3DA183 /* ReviewViewModel.swift */; };
 		FE84B10FFA450C26C0E61A57 /* VocabListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FD909C9C16F66ACECB876B /* VocabListViewModel.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* VocabDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F2A3 /* VocabDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,8 +47,9 @@
 
 /* Begin PBXFileReference section */
 		05FB41CB9EC0E7D149ABA5FC /* VocabListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabListView.swift; sourceTree = "<group>"; };
-		0A7F90CCC78EF3878609269B /* Jouzu.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Jouzu.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A7F90CCC78EF3878609269B /* Jouzu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jouzu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D2ACA2581DEE7EB790D9623 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
+		AB12CD34EF56AB78CD90EF13 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		12A2672241280E13FCAD39E5 /* GrammarHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrammarHighlighter.swift; sourceTree = "<group>"; };
 		18BA1D562B9FCE55A91A5B85 /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
 		37D9F200CD178A24005A85C5 /* SM2AlgorithmTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SM2AlgorithmTests.swift; sourceTree = "<group>"; };
@@ -69,6 +72,7 @@
 		A19B7343725667BF55DFF9DF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F4C5DCE6FB7F788D8A3DA183 /* ReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewViewModel.swift; sourceTree = "<group>"; };
 		FD56EC16DE7EDFB0F31F17AF /* SM2Algorithm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SM2Algorithm.swift; sourceTree = "<group>"; };
+		B2C3D4E5F6A7B8C9D0E1F2A3 /* VocabDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +131,7 @@
 		5E532DEA8A63EC651D17E722 /* VocabList */ = {
 			isa = PBXGroup;
 			children = (
+				B2C3D4E5F6A7B8C9D0E1F2A3 /* VocabDetailView.swift */,
 				05FB41CB9EC0E7D149ABA5FC /* VocabListView.swift */,
 				37FD909C9C16F66ACECB876B /* VocabListViewModel.swift */,
 			);
@@ -174,6 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				646DAC140834EA33CF4DED91 /* Info.plist */,
+				AB12CD34EF56AB78CD90EF13 /* Assets.xcassets */,
 				35A342F72EB619CED72E386D /* App */,
 				A65F346926F46AC3DF182E68 /* Features */,
 				F3171AF11708814899D73D67 /* Models */,
@@ -229,6 +235,7 @@
 			buildConfigurationList = 7BFFC303E3C95AC65A957EA8 /* Build configuration list for PBXNativeTarget "Jouzu" */;
 			buildPhases = (
 				5253DFD5137DDB1A85A85D58 /* Sources */,
+				AB12CD34EF56AB78CD90EF14 /* Resources */,
 				C594CA8E770E87C0AE743051 /* Frameworks */,
 			);
 			buildRules = (
@@ -257,7 +264,6 @@
 						DevelopmentTeam = "";
 					};
 					74A6D7C6B579571DDDEE7A43 = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -275,7 +281,6 @@
 			packageReferences = (
 				F138B5732FEF14BD82A252F4 /* XCRemoteSwiftPackageReference "Mecab-Swift" */,
 			);
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -284,6 +289,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AB12CD34EF56AB78CD90EF14 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB12CD34EF56AB78CD90EF12 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		5253DFD5137DDB1A85A85D58 /* Sources */ = {
@@ -308,6 +324,7 @@
 				D4B420C43678712E11E2369E /* Token.swift in Sources */,
 				B4FEF23A95153C6B17141805 /* TokenizerService.swift in Sources */,
 				FA57B6913265C76E33591E97 /* VocabCard.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* VocabDetailView.swift in Sources */,
 				EDE9775EDFAFAEE8C81E0B0B /* VocabListView.swift in Sources */,
 				FE84B10FFA450C26C0E61A57 /* VocabListViewModel.swift in Sources */,
 				17E6F8CA2DD8F2225C76BAF6 /* WordPopoverView.swift in Sources */,
@@ -494,6 +511,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 3CC6SL9MHW;
 				INFOPLIST_FILE = Jouzu/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Jouzu;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Jouzu needs camera access to photograph Japanese text for translation and vocabulary building.";
@@ -516,6 +534,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 3CC6SL9MHW;
 				INFOPLIST_FILE = Jouzu/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Jouzu;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Jouzu needs camera access to photograph Japanese text for translation and vocabulary building.";

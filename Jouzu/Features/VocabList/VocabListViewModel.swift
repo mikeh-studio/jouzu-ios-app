@@ -20,7 +20,6 @@ final class VocabListViewModel {
         case dateNewest = "Newest"
         case dateOldest = "Oldest"
         case alphabetical = "A-Z"
-        case dueDate = "Due Date"
     }
 
     func availableFilters(_ cards: [VocabCard]) -> [String] {
@@ -53,8 +52,6 @@ final class VocabListViewModel {
             result.sort { $0.dateCreated < $1.dateCreated }
         case .alphabetical:
             result.sort { $0.word < $1.word }
-        case .dueDate:
-            result.sort { $0.srsDueDate < $1.srsDueDate }
         }
 
         return result
@@ -139,7 +136,7 @@ final class VocabListViewModel {
                 reading: reading,
                 definition: definition,
                 partOfSpeech: "",
-                exampleSentence: ""
+                exampleSentence: nil
             )
             context.insert(card)
             imported += 1
