@@ -1,4 +1,8 @@
 import Foundation
+#if canImport(Mecab_Swift) && canImport(IPADic)
+import Mecab_Swift
+import IPADic
+#endif
 
 /// Wraps MeCab for Japanese text tokenization
 /// Falls back to character-level splitting if MeCab is unavailable
@@ -16,42 +20,33 @@ final class TokenizerService: Sendable {
     // MARK: - MeCab Integration
 
     private func tokenizeWithMeCab(_ text: String) -> [Token]? {
-        #if canImport(MeCab)
+        #if canImport(Mecab_Swift) && canImport(IPADic)
         return performMeCabTokenization(text)
         #else
         return nil
         #endif
     }
 
-    #if canImport(MeCab)
+    #if canImport(Mecab_Swift) && canImport(IPADic)
     private func performMeCabTokenization(_ text: String) -> [Token]? {
         do {
-            let mecab = try MeCab.Tokenizer()
-            let nodes = try mecab.tokenize(text)
+            let tokenizer = try Tokenizer(dictionary: IPADic())
+            let annotations = tokenizer.tokenize(text: text, transliteration: .hiragana)
 
-            return nodes.compactMap { node -> Token? in
-                let surface = node.surface
-                guard !surface.isEmpty else { return nil }
+            return annotations.compactMap { annotation -> Token? in
+                let surface = annotation.base
+                guard !surface.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
 
-                // MeCab feature format: POS,POS-sub1,POS-sub2,POS-sub3,conjugationType,conjugationForm,baseForm,reading,pronunciation
-                let features = node.features
-
-                let pos = PartOfSpeech(mecabPOS: features.first ?? "")
-                let baseForm = features.count > 6 ? features[6] : surface
-                let reading = features.count > 7 ? features[7] : ""
-                let inflectionType = features.count > 4 ? features[4] : nil
-                let inflectionForm = features.count > 5 ? features[5] : nil
-
-                // Convert katakana reading to hiragana
-                let hiraganaReading = katakanaToHiragana(reading)
+                let baseForm = annotation.dictionaryForm.isEmpty ? surface : annotation.dictionaryForm
+                let reading = annotation.reading == surface ? "" : annotation.reading
 
                 return Token(
                     surface: surface,
-                    reading: hiraganaReading,
-                    partOfSpeech: pos,
+                    reading: reading,
+                    partOfSpeech: mapMeCabPOS(annotation.partOfSpeech.description),
                     baseForm: baseForm,
-                    inflectionType: inflectionType == "*" ? nil : inflectionType,
-                    inflectionForm: inflectionForm == "*" ? nil : inflectionForm
+                    inflectionType: nil,
+                    inflectionForm: nil
                 )
             }
         } catch {
@@ -60,6 +55,27 @@ final class TokenizerService: Sendable {
         }
     }
     #endif
+
+    private func mapMeCabPOS(_ value: String) -> PartOfSpeech {
+        switch value.lowercased() {
+        case "verb":
+            return .verb
+        case "particle":
+            return .particle
+        case "noun":
+            return .noun
+        case "adjective":
+            return .iAdjective
+        case "adverb":
+            return .adverb
+        case "prefix":
+            return .prefix
+        case "symbol":
+            return .symbol
+        default:
+            return .unknown
+        }
+    }
 
     // MARK: - Basic Fallback Tokenizer
 
@@ -107,15 +123,32 @@ final class TokenizerService: Sendable {
     }
 
     private func makeBasicToken(_ surface: String) -> Token {
-        Token(
+        let pos: PartOfSpeech
+        if Self.particleSet.contains(surface) {
+            pos = .particle
+        } else if Self.symbolSet.contains(surface) {
+            pos = .symbol
+        } else {
+            pos = .unknown
+        }
+
+        return Token(
             surface: surface,
             reading: "",
-            partOfSpeech: .unknown,
+            partOfSpeech: pos,
             baseForm: surface,
             inflectionType: nil,
             inflectionForm: nil
         )
     }
+
+    private static let particleSet: Set<String> = [
+        "は", "が", "を", "に", "で", "と", "へ", "の", "も", "から", "まで", "より", "や", "か", "ね", "よ", "な", "ぞ", "さ"
+    ]
+
+    private static let symbolSet: Set<String> = [
+        "。", "、", "！", "？", "!", "?", "「", "」", "『", "』", "（", "）", "(", ")", "…", "・", ":", "：", ";", "；"
+    ]
 
     // MARK: - Utilities
 

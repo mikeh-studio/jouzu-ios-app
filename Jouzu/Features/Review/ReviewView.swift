@@ -18,9 +18,20 @@ struct ReviewView: View {
             .toolbar {
                 if !viewModel.sessionComplete {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Text("\(viewModel.remainingCount) remaining")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        HStack(spacing: 8) {
+                            if viewModel.isPracticeMode {
+                                Text("Practice Mode")
+                                    .font(.caption2.bold())
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(.purple.opacity(0.15))
+                                    .foregroundStyle(.purple)
+                                    .clipShape(Capsule())
+                            }
+                            Text("\(viewModel.remainingCount) remaining")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
             }
@@ -67,12 +78,12 @@ struct ReviewView: View {
                                 .clipShape(Capsule())
                         }
 
-                        if !card.exampleSentence.isEmpty {
+                        if let example = card.exampleSentence, !example.isEmpty {
                             VStack(spacing: 4) {
                                 Text("Example")
                                     .font(.caption2.bold())
                                     .foregroundStyle(.secondary)
-                                Text(card.exampleSentence)
+                                Text(example)
                                     .font(.callout)
                                     .foregroundStyle(.secondary)
                                     .multilineTextAlignment(.center)
@@ -193,13 +204,31 @@ struct ReviewView: View {
 
             Spacer()
 
-            if viewModel.cardsReviewed > 0 {
-                Button("Review Again") {
-                    viewModel.cardsReviewed = 0
-                    viewModel.loadDueCards(from: modelContext)
+            VStack(spacing: 12) {
+                if viewModel.cardsReviewed > 0 && viewModel.reviewMode == .due {
+                    Button("Review Due Again") {
+                        viewModel.cardsReviewed = 0
+                        viewModel.loadDueCards(from: modelContext)
+                    }
+                    .buttonStyle(.bordered)
                 }
-                .padding()
+
+                Button {
+                    viewModel.loadAllCards(from: modelContext)
+                } label: {
+                    Label("Practice All Cards", systemImage: "rectangle.stack")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.purple)
+
+                if viewModel.isPracticeMode {
+                    Toggle("Update SRS scheduling", isOn: $viewModel.updateSRS)
+                        .font(.callout)
+                        .padding(.horizontal)
+                }
             }
+            .padding()
         }
         .padding()
     }

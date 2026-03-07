@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 struct VocabListView: View {
     @Query private var allCards: [VocabCard]
     @State private var viewModel = VocabListViewModel()
+    @State private var selectedCard: VocabCard?
     @Environment(\.modelContext) private var modelContext
 
     var body: some View {
@@ -50,6 +51,10 @@ struct VocabListView: View {
                 if let r = viewModel.importResult {
                     Text(importSummary(r))
                 }
+            }
+            .sheet(item: $selectedCard) { card in
+                VocabDetailView(card: card)
+                    .presentationDetents([.medium, .large])
             }
         }
     }
@@ -120,6 +125,8 @@ struct VocabListView: View {
         } else {
             ForEach(filtered) { card in
                 VocabCardRow(card: card)
+                    .contentShape(Rectangle())
+                    .onTapGesture { selectedCard = card }
             }
             .onDelete { indexSet in
                 let filtered = viewModel.filteredCards(allCards)
@@ -143,6 +150,8 @@ struct VocabListView: View {
                 Section {
                     ForEach(cards) { card in
                         VocabCardRow(card: card)
+                            .contentShape(Rectangle())
+                            .onTapGesture { selectedCard = card }
                     }
                     .onDelete { indexSet in
                         for index in indexSet {
@@ -301,8 +310,6 @@ private struct VocabCardRow: View {
                 }
 
                 Spacer()
-
-                srsIndicator
             }
 
             Text(card.definition)
@@ -331,24 +338,6 @@ private struct VocabCardRow: View {
         .padding(.vertical, 4)
     }
 
-    private var srsIndicator: some View {
-        Group {
-            if card.srsDueDate <= Date() {
-                Text("Due")
-                    .font(.caption2.bold())
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(.red.opacity(0.15))
-                    .foregroundStyle(.red)
-                    .clipShape(Capsule())
-            } else {
-                let days = Calendar.current.dateComponents([.day], from: Date(), to: card.srsDueDate).day ?? 0
-                Text(days == 1 ? "1 day" : "\(days) days")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
 }
 
 #Preview("With Cards") {

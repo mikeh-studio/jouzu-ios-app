@@ -3,7 +3,7 @@ import SwiftData
 
 struct WordPopoverView: View {
     let token: Token
-    let exampleSentence: String
+    let sourceText: String
     let sourceImage: UIImage?
     let onDismiss: () -> Void
 
@@ -135,6 +135,8 @@ struct WordPopoverView: View {
     }
 
     private func saveToVocab() {
+        let exampleSentence = ExampleSentenceExtractor.extract(from: sourceText, token: token)
+
         let card = VocabCard(
             word: token.baseForm.isEmpty ? token.surface : token.baseForm,
             reading: token.reading,
@@ -152,7 +154,7 @@ struct WordPopoverView: View {
 #Preview {
     WordPopoverView(
         token: PreviewSampleData.sampleTokens[2], // 食べた
-        exampleSentence: PreviewSampleData.sampleText,
+        sourceText: PreviewSampleData.sampleText,
         sourceImage: nil,
         onDismiss: {}
     )
@@ -163,7 +165,7 @@ struct WordPopoverView: View {
 #Preview("Noun") {
     WordPopoverView(
         token: PreviewSampleData.sampleTokens[0], // 猫
-        exampleSentence: PreviewSampleData.sampleText,
+        sourceText: PreviewSampleData.sampleText,
         sourceImage: nil,
         onDismiss: {}
     )

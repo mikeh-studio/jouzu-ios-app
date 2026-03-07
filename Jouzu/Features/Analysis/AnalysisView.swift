@@ -1,5 +1,4 @@
 import SwiftUI
-import Translation
 
 struct AnalysisView: View {
     @State private var viewModel: AnalysisViewModel
@@ -14,12 +13,6 @@ struct AnalysisView: View {
                 // Original image
                 imageSection
 
-                // Recognized text with grammar highlighting
-                recognizedTextSection
-
-                // Translation
-                translationSection
-
                 // Grammar legend
                 GrammarLegendView()
                     .padding(.horizontal)
@@ -30,24 +23,11 @@ struct AnalysisView: View {
         }
         .navigationTitle("Analysis")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            viewModel.requestTranslation()
-        }
-        .translationTask(viewModel.translationConfiguration) { session in
-            let textToTranslate = viewModel.result.recognizedText
-            do {
-                nonisolated(unsafe) let s = session
-                let response = try await s.translate(textToTranslate)
-                await MainActor.run { viewModel.handleTranslationResult(response) }
-            } catch {
-                await MainActor.run { viewModel.isTranslating = false }
-            }
-        }
         .overlay(alignment: .bottom) {
             if let token = viewModel.selectedToken {
                 WordPopoverView(
                     token: token,
-                    exampleSentence: viewModel.result.recognizedText,
+                    sourceText: viewModel.result.recognizedText,
                     sourceImage: viewModel.result.originalImage,
                     onDismiss: { viewModel.selectedToken = nil }
                 )
@@ -69,44 +49,6 @@ struct AnalysisView: View {
             .padding(.horizontal)
     }
 
-    private var recognizedTextSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Recognized Text")
-                .font(.caption.bold())
-                .foregroundStyle(.secondary)
-
-            Text(viewModel.result.recognizedText)
-                .font(.title3)
-                .textSelection(.enabled)
-        }
-        .padding(.horizontal)
-    }
-
-    private var translationSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Translation")
-                .font(.caption.bold())
-                .foregroundStyle(.secondary)
-
-            if viewModel.isTranslating {
-                HStack {
-                    ProgressView()
-                    Text("Translating...")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                }
-            } else if let translation = viewModel.translation {
-                Text(translation)
-                    .font(.callout)
-            } else {
-                Text("Translation unavailable — download the Japanese language pack in Settings > General > Language & Region")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .padding(.horizontal)
-    }
-
     private var tokenGridSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Words")
@@ -115,7 +57,7 @@ struct AnalysisView: View {
                 .padding(.horizontal)
 
             FlowLayout(spacing: 6) {
-                ForEach(viewModel.result.tokens) { token in
+                ForEach(viewModel.result.tokens.filter { $0.partOfSpeech != .particle }) { token in
                     TokenChipView(
                         token: token,
                         isSelected: viewModel.selectedToken?.id == token.id

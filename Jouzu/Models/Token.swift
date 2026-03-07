@@ -5,7 +5,7 @@ struct Token: Identifiable, Hashable {
     let id = UUID()
     let surface: String       // The word as it appears in text
     let reading: String       // Hiragana reading
-    let partOfSpeech: PartOfSpeech
+    var partOfSpeech: PartOfSpeech
     let baseForm: String      // Dictionary form
     let inflectionType: String? // e.g., 連用形, 未然形
     let inflectionForm: String? // e.g., 一段, 五段
@@ -74,5 +74,101 @@ enum PartOfSpeech: String, Codable, CaseIterable {
 
     init(mecabPOS: String) {
         self = PartOfSpeech(rawValue: mecabPOS) ?? .unknown
+    }
+
+    init(dictionaryPOS: String) {
+        switch dictionaryPOS.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
+        case "verb", "動詞":
+            self = .verb
+        case "noun", "名詞":
+            self = .noun
+        case "i-adjective", "adjective", "形容詞":
+            self = .iAdjective
+        case "na-adjective", "形容動詞":
+            self = .naAdjective
+        case "particle", "助詞":
+            self = .particle
+        case "auxiliary", "auxiliary-verb", "助動詞":
+            self = .auxiliaryVerb
+        case "adverb", "副詞":
+            self = .adverb
+        case "conjunction", "接続詞":
+            self = .conjunction
+        case "interjection", "感動詞":
+            self = .interjection
+        case "prefix", "接頭詞":
+            self = .prefix
+        case "symbol", "記号":
+            self = .symbol
+        default:
+            self = .unknown
+        }
+    }
+}
+
+enum ExampleSentenceExtractor {
+    private static let sentenceTerminators: Set<Character> = ["。", "！", "？", "!", "?"]
+
+    static func extract(from text: String, token: Token) -> String? {
+        let source = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !source.isEmpty else { return nil }
+
+        let lookupTerms = [token.surface, token.baseForm]
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        guard !lookupTerms.isEmpty else { return nil }
+
+        for sentence in splitSentences(source) {
+            let trimmed = sentence.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard isCompleteSentence(trimmed) else { continue }
+            if lookupTerms.contains(where: { trimmed.contains($0) }) {
+                return trimmed
+            }
+        }
+
+        return nil
+    }
+
+    private static func isCompleteSentence(_ sentence: String) -> Bool {
+        guard let last = sentence.last else { return false }
+        return sentenceTerminators.contains(last)
+    }
+
+    private static func splitSentences(_ text: String) -> [String] {
+        var sentences: [String] = []
+        var buffer = ""
+
+        for char in text {
+            buffer.append(char)
+            if sentenceTerminators.contains(char) {
+                sentences.append(buffer)
+                buffer = ""
+            }
+        }
+
+        return sentences
+    }
+}
+
+enum JapaneseTokenFilter {
+    static func filterWords(_ tokens: [Token]) -> [Token] {
+        tokens.filter { token in
+            containsJapaneseScript(token.surface) && token.partOfSpeech != .particle
+        }
+    }
+
+    static func containsJapaneseScript(_ text: String) -> Bool {
+        for scalar in text.unicodeScalars {
+            switch scalar.value {
+            case 0x3040...0x309F, // Hiragana
+                 0x30A0...0x30FF, // Katakana
+                 0x4E00...0x9FFF, // CJK Unified Ideographs
+                 0x3400...0x4DBF: // CJK Extension A
+                return true
+            default:
+                continue
+            }
+        }
+        return false
     }
 }

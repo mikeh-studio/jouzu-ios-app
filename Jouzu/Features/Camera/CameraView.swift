@@ -1,5 +1,6 @@
 import SwiftUI
 import PhotosUI
+import Translation
 
 struct CameraView: View {
     @State private var viewModel = CameraViewModel()
@@ -12,9 +13,12 @@ struct CameraView: View {
 
                 // App icon / hero area
                 VStack(spacing: 12) {
-                    Image(systemName: "camera.viewfinder")
-                        .font(.system(size: 72))
-                        .foregroundStyle(Color.accentColor)
+                    Image("AppMark")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 124, height: 124)
+                        .clipShape(RoundedRectangle(cornerRadius: 28))
+                        .shadow(color: Color.red.opacity(0.22), radius: 18, y: 10)
 
                     Text("Jouzu")
                         .font(.largeTitle.bold())
@@ -85,12 +89,28 @@ struct CameraView: View {
                 }
                 selectedPhotoItem = nil
             }
-            .navigationDestination(isPresented: $viewModel.showAnalysis) {
+            .navigationDestination(isPresented: showAnalysisBinding) {
                 if let result = viewModel.analysisResult {
                     AnalysisView(result: result)
+                        .id(result.id)
                 }
             }
+            .translationTask(viewModel.translationConfiguration) { session in
+                nonisolated(unsafe) let s = session
+                await viewModel.handleTranslationSession(s)
+            }
         }
+    }
+
+    private var showAnalysisBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.analysisResult != nil },
+            set: { isPresented in
+                if !isPresented {
+                    viewModel.analysisResult = nil
+                }
+            }
+        )
     }
 }
 
