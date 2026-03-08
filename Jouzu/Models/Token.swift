@@ -157,6 +157,17 @@ enum JapaneseTokenFilter {
         }
     }
 
+    static func uniqueVocabularyTokens(from tokens: [Token]) -> [Token] {
+        var seen: Set<AnalysisWordKey> = []
+
+        return tokens.filter { token in
+            guard isVocabularyToken(token) else { return false }
+
+            let key = AnalysisWordKey(token: token)
+            return seen.insert(key).inserted
+        }
+    }
+
     static func containsJapaneseScript(_ text: String) -> Bool {
         for scalar in text.unicodeScalars {
             switch scalar.value {
@@ -170,5 +181,53 @@ enum JapaneseTokenFilter {
             }
         }
         return false
+    }
+
+    private static func isVocabularyToken(_ token: Token) -> Bool {
+        guard containsJapaneseScript(token.surface) else { return false }
+
+        switch token.partOfSpeech {
+        case .particle, .auxiliaryVerb, .symbol, .filler:
+            return false
+        default:
+            break
+        }
+
+        let dedupeText = normalizedWordText(for: token)
+        return !isSingleHiraganaToken(dedupeText)
+    }
+
+    private static func normalizedWordText(for token: Token) -> String {
+        let candidate = token.baseForm.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !candidate.isEmpty {
+            return candidate
+        }
+
+        return token.surface.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func isSingleHiraganaToken(_ text: String) -> Bool {
+        guard text.count == 1 else { return false }
+
+        for scalar in text.unicodeScalars {
+            guard (0x3040...0x309F).contains(scalar.value) else {
+                return false
+            }
+        }
+
+        return !text.isEmpty
+    }
+}
+
+private struct AnalysisWordKey: Hashable {
+    let normalizedText: String
+    let partOfSpeech: PartOfSpeech
+
+    init(token: Token) {
+        let base = token.baseForm.trimmingCharacters(in: .whitespacesAndNewlines)
+        let fallback = token.surface.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        self.normalizedText = base.isEmpty ? fallback : base
+        self.partOfSpeech = token.partOfSpeech
     }
 }

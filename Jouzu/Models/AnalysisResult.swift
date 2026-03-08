@@ -18,3 +18,24 @@ struct AnalysisResult: Identifiable {
         self.timestamp = Date()
     }
 }
+
+enum AnalysisTextFormatter {
+    static func normalizedSourceText(from text: String) -> String {
+        let lines = text
+            .components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+
+        return collapseWhitespace(in: lines.joined(separator: " "))
+    }
+
+    static func cleanedTranslation(_ text: String) -> String {
+        collapseWhitespace(in: text)
+    }
+
+    private static func collapseWhitespace(in text: String) -> String {
+        text
+            .replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}

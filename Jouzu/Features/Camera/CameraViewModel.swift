@@ -10,22 +10,28 @@ final class CameraViewModel {
     var showCamera = false
     var isProcessing = false
     var errorMessage: String?
-    var analysisResult: AnalysisResult?
+    var analysisViewModel: AnalysisViewModel?
 
-    /// Set to trigger the .translationTask modifier for definition fallback
+    /// Set to trigger the .translationTask modifier for translation enrichment
     var translationConfiguration: TranslationSession.Configuration?
+    var translationTaskID = UUID()
 
     private let ocrService = OCRService()
     private let tokenizerService = TokenizerService()
     private let dictionaryService = DictionaryService()
     private let grammarService = GrammarService()
 
-    /// Tokens awaiting translation enrichment
-    private var pendingTokens: [Token]?
-    private var pendingFullText: String?
-    private var pendingImage: UIImage?
-    private var pendingRequestID: UUID?
+    private struct PendingAnalysisRequest {
+        let requestID: UUID
+        let recognizedText: String
+        let tokens: [Token]
+        let needsDefinitionTranslation: Bool
+    }
+
+    private var pendingAnalysisRequest: PendingAnalysisRequest?
     private var activeRequestID: UUID?
+    private var processingTask: Task<Void, Never>?
+    private var translationTimeoutTask: Task<Void, Never>?
 
     func captureFromCamera() {
         showCamera = true
@@ -39,24 +45,21 @@ final class CameraViewModel {
         let requestID = UUID()
         activeRequestID = requestID
 
+        processingTask?.cancel()
+        clearPendingTranslationState()
+
         capturedImage = image
         isProcessing = true
         errorMessage = nil
-        analysisResult = nil
-        translationConfiguration = nil
-        pendingTokens = nil
-        pendingFullText = nil
-        pendingImage = nil
-        pendingRequestID = nil
+        analysisViewModel = nil
 
         let ocr = ocrService
         let tokenizer = tokenizerService
         let dictionary = dictionaryService
         let grammar = grammarService
 
-        Task {
+        processingTask = Task {
             do {
-                // Run OCR + dictionary enrichment off main thread
                 let (tokens, fullText) = try await Task.detached {
                     let ocrResult = try await ocr.recognizeText(in: image)
                     var tokens = tokenizer.tokenize(ocrResult.fullText)
@@ -66,94 +69,147 @@ final class CameraViewModel {
                     return (tokens, ocrResult.fullText)
                 }.value
 
+                guard !Task.isCancelled else { return }
                 guard self.activeRequestID == requestID else { return }
 
-                // Check if any tokens still need definitions
-                let needsTranslation = tokens.contains { token in
-                    token.definitions.isEmpty &&
-                    token.partOfSpeech != .symbol &&
-                    token.partOfSpeech != .filler &&
-                    token.partOfSpeech != .particle
-                }
+                let cleanedText = AnalysisTextFormatter.normalizedSourceText(from: fullText)
+                let baseResult = AnalysisResult(
+                    originalImage: image,
+                    recognizedText: cleanedText,
+                    tokens: tokens
+                )
 
-                if needsTranslation {
-                    // Store pending state and trigger translation
-                    pendingTokens = tokens
-                    pendingFullText = fullText
-                    pendingImage = image
-                    pendingRequestID = requestID
-                    translationConfiguration = .init(
-                        source: .init(identifier: "ja"),
-                        target: .init(identifier: "en")
-                    )
-                } else {
-                    finishProcessing(tokens: tokens, fullText: fullText, image: image, requestID: requestID)
-                }
-            } catch {
-                guard self.activeRequestID == requestID else { return }
-                self.errorMessage = error.localizedDescription
-                self.translationConfiguration = nil
-                self.pendingTokens = nil
-                self.pendingFullText = nil
-                self.pendingImage = nil
-                self.pendingRequestID = nil
+                let analysisViewModel = AnalysisViewModel(result: baseResult)
+                analysisViewModel.beginTranslation()
+
+                self.analysisViewModel = analysisViewModel
                 self.isProcessing = false
+                self.processingTask = nil
+
+                scheduleTranslation(tokens: tokens, fullText: cleanedText, requestID: requestID)
+            } catch {
+                guard !Task.isCancelled else { return }
+                guard self.activeRequestID == requestID else { return }
+                finishProcessing(with: error.localizedDescription, requestID: requestID)
             }
         }
     }
 
-    /// Called from .translationTask modifier when session is available
     func handleTranslationSession(_ session: TranslationSession) async {
-        guard let requestID = pendingRequestID,
-              requestID == activeRequestID else {
-            return
-        }
-
-        guard let tokens = pendingTokens,
-              let fullText = pendingFullText,
-              let image = pendingImage else {
+        guard let pendingRequest = pendingAnalysisRequest,
+              pendingRequest.requestID == activeRequestID else {
             return
         }
 
         let dictionary = dictionaryService
         nonisolated(unsafe) let s = session
-        let enriched = await dictionary.enrichTokensWithTranslation(tokens, session: s)
+
+        let enrichedTokens: [Token]
+        if pendingRequest.needsDefinitionTranslation {
+            enrichedTokens = await dictionary.enrichTokensWithTranslation(pendingRequest.tokens, session: s)
+        } else {
+            enrichedTokens = pendingRequest.tokens
+        }
+
+        let translation = await translateFullText(pendingRequest.recognizedText, session: s)
 
         await MainActor.run {
-            guard self.activeRequestID == requestID else { return }
-            finishProcessing(tokens: enriched, fullText: fullText, image: image, requestID: requestID)
+            guard self.activeRequestID == pendingRequest.requestID else { return }
+            guard let analysisViewModel else {
+                clearPendingTranslationState()
+                return
+            }
+
+            analysisViewModel.applyEnrichment(tokens: enrichedTokens, translation: translation)
+            clearPendingTranslationState()
         }
     }
 
-    private func finishProcessing(tokens: [Token], fullText: String, image: UIImage, requestID: UUID) {
-        guard activeRequestID == requestID else { return }
-
-        pendingTokens = nil
-        pendingFullText = nil
-        pendingImage = nil
-        pendingRequestID = nil
-        translationConfiguration = nil
-
-        let result = AnalysisResult(
-            originalImage: image,
-            recognizedText: fullText,
-            tokens: tokens
-        )
-
-        self.analysisResult = result
-        self.isProcessing = false
+    func dismissAnalysis() {
+        activeRequestID = nil
+        analysisViewModel = nil
+        clearPendingTranslationState()
     }
 
     func reset() {
+        processingTask?.cancel()
+        processingTask = nil
         activeRequestID = nil
         capturedImage = nil
-        analysisResult = nil
-        translationConfiguration = nil
-        pendingTokens = nil
-        pendingFullText = nil
-        pendingImage = nil
-        pendingRequestID = nil
+        analysisViewModel = nil
+        clearPendingTranslationState()
+        translationTaskID = UUID()
         isProcessing = false
         errorMessage = nil
+    }
+
+    private func scheduleTranslation(tokens: [Token], fullText: String, requestID: UUID) {
+        guard activeRequestID == requestID else { return }
+
+        let needsDefinitionTranslation = tokens.contains { token in
+            token.definitions.isEmpty &&
+            token.partOfSpeech != .symbol &&
+            token.partOfSpeech != .filler &&
+            token.partOfSpeech != .particle &&
+            token.partOfSpeech != .auxiliaryVerb
+        }
+
+        pendingAnalysisRequest = PendingAnalysisRequest(
+            requestID: requestID,
+            recognizedText: fullText,
+            tokens: tokens,
+            needsDefinitionTranslation: needsDefinitionTranslation
+        )
+
+        translationTaskID = requestID
+        translationConfiguration = TranslationSession.Configuration(
+            source: .init(identifier: "ja"),
+            target: .init(identifier: "en")
+        )
+        startTranslationTimeout(for: requestID)
+    }
+
+    private func translateFullText(_ text: String, session: TranslationSession) async -> String? {
+        guard !text.isEmpty else { return nil }
+
+        do {
+            nonisolated(unsafe) let s = session
+            let response = try await s.translate(text)
+            let cleaned = AnalysisTextFormatter.cleanedTranslation(response.targetText)
+            return cleaned.isEmpty ? nil : cleaned
+        } catch {
+            return nil
+        }
+    }
+
+    private func startTranslationTimeout(for requestID: UUID) {
+        translationTimeoutTask?.cancel()
+        translationTimeoutTask = Task {
+            try? await Task.sleep(for: .seconds(12))
+            guard !Task.isCancelled else { return }
+
+            await MainActor.run {
+                guard self.activeRequestID == requestID else { return }
+                self.analysisViewModel?.markTranslationUnavailable()
+                clearPendingTranslationState()
+            }
+        }
+    }
+
+    private func finishProcessing(with errorMessage: String, requestID: UUID) {
+        guard activeRequestID == requestID else { return }
+
+        self.errorMessage = errorMessage
+        self.analysisViewModel = nil
+        self.isProcessing = false
+        self.processingTask = nil
+        clearPendingTranslationState()
+    }
+
+    private func clearPendingTranslationState() {
+        translationTimeoutTask?.cancel()
+        translationTimeoutTask = nil
+        translationConfiguration = nil
+        pendingAnalysisRequest = nil
     }
 }

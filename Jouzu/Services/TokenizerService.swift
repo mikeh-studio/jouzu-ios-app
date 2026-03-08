@@ -149,22 +149,4 @@ final class TokenizerService: Sendable {
     private static let symbolSet: Set<String> = [
         "。", "、", "！", "？", "!", "?", "「", "」", "『", "』", "（", "）", "(", ")", "…", "・", ":", "：", ";", "；"
     ]
-
-    // MARK: - Utilities
-
-    private func katakanaToHiragana(_ text: String) -> String {
-        var result = ""
-        for scalar in text.unicodeScalars {
-            if scalar.value >= 0x30A0 && scalar.value <= 0x30FF {
-                if let hiragana = Unicode.Scalar(scalar.value - 0x60) {
-                    result.append(Character(hiragana))
-                } else {
-                    result.append(Character(scalar))
-                }
-            } else {
-                result.append(Character(scalar))
-            }
-        }
-        return result
-    }
 }

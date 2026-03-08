@@ -90,27 +90,46 @@ struct CameraView: View {
                 selectedPhotoItem = nil
             }
             .navigationDestination(isPresented: showAnalysisBinding) {
-                if let result = viewModel.analysisResult {
-                    AnalysisView(result: result)
-                        .id(result.id)
+                if let analysisViewModel = viewModel.analysisViewModel {
+                    AnalysisView(viewModel: analysisViewModel)
+                        .id(analysisViewModel.result.id)
                 }
             }
-            .translationTask(viewModel.translationConfiguration) { session in
-                nonisolated(unsafe) let s = session
-                await viewModel.handleTranslationSession(s)
+            .background {
+                TranslationCoordinatorView(
+                    taskID: viewModel.translationTaskID,
+                    configuration: viewModel.translationConfiguration
+                ) { session in
+                    await viewModel.handleTranslationSession(session)
+                }
             }
         }
     }
 
     private var showAnalysisBinding: Binding<Bool> {
         Binding(
-            get: { viewModel.analysisResult != nil },
+            get: { viewModel.analysisViewModel != nil },
             set: { isPresented in
                 if !isPresented {
-                    viewModel.analysisResult = nil
+                    viewModel.dismissAnalysis()
                 }
             }
         )
+    }
+}
+
+private struct TranslationCoordinatorView: View {
+    let taskID: UUID
+    let configuration: TranslationSession.Configuration?
+    let action: @MainActor (TranslationSession) async -> Void
+
+    var body: some View {
+        Color.clear
+            .frame(width: 0, height: 0)
+            .id(taskID)
+            .translationTask(configuration) { session in
+                await action(session)
+            }
     }
 }
 
