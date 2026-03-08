@@ -4,9 +4,20 @@ import Translation
 
 /// Provides JMdict dictionary lookups via bundled SQLite database
 final class DictionaryService: Sendable {
+    enum DatabaseSource: Equatable {
+        case bundled
+        case custom
+        case development
+    }
 
     // Initialized once in init(), then read-only — safe across threads
     nonisolated(unsafe) private var db: OpaquePointer?
+    private let databasePath: String?
+    nonisolated(unsafe) private var resolvedDatabaseSource: DatabaseSource = .development
+
+    var databaseSource: DatabaseSource {
+        resolvedDatabaseSource
+    }
 
     struct DictionaryEntry {
         let word: String
@@ -15,7 +26,8 @@ final class DictionaryService: Sendable {
         let partOfSpeech: String
     }
 
-    init() {
+    init(databasePath: String? = Bundle.main.path(forResource: "jmdict", ofType: "sqlite")) {
+        self.databasePath = databasePath
         openDatabase()
     }
 
@@ -28,11 +40,15 @@ final class DictionaryService: Sendable {
     // MARK: - Database Setup
 
     private func openDatabase() {
-        // Try bundled database first
-        if let bundledPath = Bundle.main.path(forResource: "jmdict", ofType: "sqlite") {
-            if sqlite3_open_v2(bundledPath, &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK {
-                return
-            }
+        if let databasePath,
+           sqlite3_open_v2(databasePath, &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK {
+            resolvedDatabaseSource = databasePath.hasSuffix("/jmdict.sqlite") ? .bundled : .custom
+            return
+        }
+
+        if let db {
+            sqlite3_close(db)
+            self.db = nil
         }
 
         // Create in-memory database with common entries for development
@@ -41,6 +57,7 @@ final class DictionaryService: Sendable {
 
     private func createDevelopmentDatabase() {
         guard sqlite3_open(":memory:", &db) == SQLITE_OK else { return }
+        resolvedDatabaseSource = .development
 
         let createSQL = """
         CREATE TABLE IF NOT EXISTS entries (
@@ -48,7 +65,8 @@ final class DictionaryService: Sendable {
             kanji TEXT,
             reading TEXT,
             definition TEXT,
-            pos TEXT
+            pos TEXT,
+            priority INTEGER DEFAULT 9999
         );
         CREATE INDEX IF NOT EXISTS idx_kanji ON entries(kanji);
         CREATE INDEX IF NOT EXISTS idx_reading ON entries(reading);
@@ -619,7 +637,7 @@ final class DictionaryService: Sendable {
             ("そうですか", "そうですか", "is that so?", "expression"),
         ]
 
-        let insertSQL = "INSERT INTO entries (kanji, reading, definition, pos) VALUES (?, ?, ?, ?)"
+        let insertSQL = "INSERT INTO entries (kanji, reading, definition, pos, priority) VALUES (?, ?, ?, ?, ?)"
         var stmt: OpaquePointer?
 
         if sqlite3_prepare_v2(db, insertSQL, -1, &stmt, nil) == SQLITE_OK {
@@ -628,8 +646,10 @@ final class DictionaryService: Sendable {
                 sqlite3_bind_text(stmt, 2, (entry.1 as NSString).utf8String, -1, nil)
                 sqlite3_bind_text(stmt, 3, (entry.2 as NSString).utf8String, -1, nil)
                 sqlite3_bind_text(stmt, 4, (entry.3 as NSString).utf8String, -1, nil)
+                sqlite3_bind_int(stmt, 5, 9999)
                 sqlite3_step(stmt)
                 sqlite3_reset(stmt)
+                sqlite3_clear_bindings(stmt)
             }
             sqlite3_finalize(stmt)
         }
@@ -640,15 +660,25 @@ final class DictionaryService: Sendable {
     /// Look up a word by its surface form or base form
     func lookup(word: String) -> [DictionaryEntry] {
         guard let db else { return [] }
+        let trimmed = word.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return [] }
 
-        let query = "SELECT kanji, reading, definition, pos FROM entries WHERE kanji = ? OR reading = ? LIMIT 10"
+        let query = """
+        SELECT kanji, reading, definition, pos
+        FROM entries
+        WHERE kanji = ? OR reading = ?
+        ORDER BY CASE WHEN kanji = ? THEN 0 ELSE 1 END, priority ASC, LENGTH(kanji) ASC
+        LIMIT 10
+        """
         var stmt: OpaquePointer?
         var results: [DictionaryEntry] = []
+        var seenKeys: Set<String> = []
 
         guard sqlite3_prepare_v2(db, query, -1, &stmt, nil) == SQLITE_OK else { return [] }
 
-        sqlite3_bind_text(stmt, 1, (word as NSString).utf8String, -1, nil)
-        sqlite3_bind_text(stmt, 2, (word as NSString).utf8String, -1, nil)
+        sqlite3_bind_text(stmt, 1, (trimmed as NSString).utf8String, -1, nil)
+        sqlite3_bind_text(stmt, 2, (trimmed as NSString).utf8String, -1, nil)
+        sqlite3_bind_text(stmt, 3, (trimmed as NSString).utf8String, -1, nil)
 
         while sqlite3_step(stmt) == SQLITE_ROW {
             let kanji = sqlite3_column_text(stmt, 0).map(String.init(cString:)) ?? ""
@@ -657,6 +687,8 @@ final class DictionaryService: Sendable {
             let pos = sqlite3_column_text(stmt, 3).map(String.init(cString:)) ?? ""
 
             guard !kanji.isEmpty else { continue }
+            let dedupeKey = [kanji, reading, definition, pos].joined(separator: "\u{1F}")
+            guard seenKeys.insert(dedupeKey).inserted else { continue }
 
             results.append(DictionaryEntry(
                 word: kanji,
@@ -675,11 +707,7 @@ final class DictionaryService: Sendable {
         tokens.map { token in
             var enriched = token
 
-            // Try base form first, then surface form
-            let entries = lookup(word: token.baseForm)
-            let fallback = entries.isEmpty ? lookup(word: token.surface) : entries
-
-            if let entry = fallback.first {
+            if let entry = lookupEntries(for: token).first {
                 enriched.definitions = entry.definitions
 
                 let dictionaryPOS = PartOfSpeech(dictionaryPOS: entry.partOfSpeech)
@@ -733,5 +761,21 @@ final class DictionaryService: Sendable {
         }
 
         return result
+    }
+
+    private func lookupEntries(for token: Token) -> [DictionaryEntry] {
+        let candidates = [token.baseForm, token.surface, token.reading]
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+
+        var seen: Set<String> = []
+        for candidate in candidates where seen.insert(candidate).inserted {
+            let matches = lookup(word: candidate)
+            if !matches.isEmpty {
+                return matches
+            }
+        }
+
+        return []
     }
 }

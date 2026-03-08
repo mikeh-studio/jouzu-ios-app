@@ -1,17 +1,21 @@
 import SwiftUI
 
 struct AnalysisView: View {
-    @State private var viewModel: AnalysisViewModel
-
-    init(result: AnalysisResult) {
-        _viewModel = State(initialValue: AnalysisViewModel(result: result))
-    }
+    @Bindable var viewModel: AnalysisViewModel
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // Original image
                 imageSection
+
+                if let translation = viewModel.translation {
+                    translationSection(translation)
+                } else if viewModel.isTranslationLoading {
+                    translationLoadingSection
+                } else if viewModel.showTranslationUnavailable {
+                    translationUnavailableSection
+                }
 
                 // Grammar legend
                 GrammarLegendView()
@@ -49,6 +53,61 @@ struct AnalysisView: View {
             .padding(.horizontal)
     }
 
+    private func translationSection(_ translation: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Translation")
+                .font(.caption.bold())
+                .foregroundStyle(.secondary)
+
+            Text(translation)
+                .font(.body)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(16)
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .padding(.horizontal)
+    }
+
+    private var translationLoadingSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Translation")
+                .font(.caption.bold())
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 12) {
+                ProgressView()
+                    .controlSize(.small)
+
+                Text("Translating...")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+            .background(Color(.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .padding(.horizontal)
+    }
+
+    private var translationUnavailableSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Translation")
+                .font(.caption.bold())
+                .foregroundStyle(.secondary)
+
+            Text("Translation unavailable.")
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(16)
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .padding(.horizontal)
+    }
+
     private var tokenGridSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Words")
@@ -57,7 +116,7 @@ struct AnalysisView: View {
                 .padding(.horizontal)
 
             FlowLayout(spacing: 6) {
-                ForEach(viewModel.result.tokens.filter { $0.partOfSpeech != .particle }) { token in
+                ForEach(viewModel.words) { token in
                     TokenChipView(
                         token: token,
                         isSelected: viewModel.selectedToken?.id == token.id
@@ -170,7 +229,7 @@ struct FlowLayout: Layout {
 
 #Preview {
     NavigationStack {
-        AnalysisView(result: PreviewSampleData.sampleAnalysisResult)
+        AnalysisView(viewModel: AnalysisViewModel(result: PreviewSampleData.sampleAnalysisResult))
     }
     .modelContainer(PreviewSampleData.previewModelContainer)
 }

@@ -1,4 +1,6 @@
 import XCTest
+import UIKit
+import SQLite3
 @testable import Jouzu
 
 final class SM2AlgorithmTests: XCTestCase {
@@ -154,5 +156,205 @@ final class JapaneseTokenFilterTests: XCTestCase {
         let surfaces = filtered.map(\.surface)
 
         XCTAssertEqual(surfaces, ["猫", "iPhoneケース"])
+    }
+
+    func testUniqueVocabularyTokensDeduplicatesByBaseForm() {
+        let tokens: [Token] = [
+            Token(surface: "食べた", reading: "たべた", partOfSpeech: .verb, baseForm: "食べる", inflectionType: nil, inflectionForm: nil),
+            Token(surface: "食べる", reading: "たべる", partOfSpeech: .verb, baseForm: "食べる", inflectionType: nil, inflectionForm: nil),
+            Token(surface: "猫", reading: "ねこ", partOfSpeech: .noun, baseForm: "猫", inflectionType: nil, inflectionForm: nil),
+        ]
+
+        let filtered = JapaneseTokenFilter.uniqueVocabularyTokens(from: tokens)
+
+        XCTAssertEqual(filtered.map(\.surface), ["食べた", "猫"])
+    }
+
+    func testUniqueVocabularyTokensRemovesSingleHiraganaAndGrammarTokens() {
+        let tokens: [Token] = [
+            Token(surface: "で", reading: "で", partOfSpeech: .particle, baseForm: "で", inflectionType: nil, inflectionForm: nil),
+            Token(surface: "は", reading: "は", partOfSpeech: .noun, baseForm: "は", inflectionType: nil, inflectionForm: nil),
+            Token(surface: "です", reading: "です", partOfSpeech: .auxiliaryVerb, baseForm: "です", inflectionType: nil, inflectionForm: nil),
+            Token(surface: "すごい", reading: "すごい", partOfSpeech: .iAdjective, baseForm: "すごい", inflectionType: nil, inflectionForm: nil),
+            Token(surface: "カメラ", reading: "かめら", partOfSpeech: .noun, baseForm: "カメラ", inflectionType: nil, inflectionForm: nil),
+        ]
+
+        let filtered = JapaneseTokenFilter.uniqueVocabularyTokens(from: tokens)
+
+        XCTAssertEqual(filtered.map(\.surface), ["すごい", "カメラ"])
+    }
+}
+
+final class AnalysisTextFormatterTests: XCTestCase {
+    func testNormalizedSourceTextCollapsesLinesAndWhitespace() {
+        let text = "  一行目  \n\n 二行目\t\n三行目  "
+
+        let cleaned = AnalysisTextFormatter.normalizedSourceText(from: text)
+
+        XCTAssertEqual(cleaned, "一行目 二行目 三行目")
+    }
+
+    func testCleanedTranslationCollapsesWhitespace() {
+        let translation = "  The   cat\n\n ate\t fish.  "
+
+        let cleaned = AnalysisTextFormatter.cleanedTranslation(translation)
+
+        XCTAssertEqual(cleaned, "The cat ate fish.")
+    }
+}
+
+@MainActor
+final class AnalysisViewModelTests: XCTestCase {
+    func testTranslationLifecycleTransitionsWithoutBlockingResult() {
+        let baseResult = AnalysisResult(
+            originalImage: UIImage(),
+            recognizedText: "猫 食べる",
+            tokens: [
+                Token(surface: "猫", reading: "ねこ", partOfSpeech: .noun, baseForm: "猫", inflectionType: nil, inflectionForm: nil),
+                Token(surface: "食べる", reading: "たべる", partOfSpeech: .verb, baseForm: "食べる", inflectionType: nil, inflectionForm: nil),
+            ]
+        )
+
+        let viewModel = AnalysisViewModel(result: baseResult)
+
+        XCTAssertEqual(viewModel.translationState, .idle)
+        XCTAssertNil(viewModel.translation)
+
+        viewModel.beginTranslation()
+        XCTAssertEqual(viewModel.translationState, .loading)
+
+        let enrichedTokens = [
+            Token(surface: "猫", reading: "ねこ", partOfSpeech: .noun, baseForm: "猫", inflectionType: nil, inflectionForm: nil, definitions: ["cat"]),
+            Token(surface: "食べる", reading: "たべる", partOfSpeech: .verb, baseForm: "食べる", inflectionType: nil, inflectionForm: nil, definitions: ["to eat"]),
+        ]
+        viewModel.applyEnrichment(tokens: enrichedTokens, translation: "The cat eats.")
+
+        XCTAssertEqual(viewModel.translationState, .complete)
+        XCTAssertEqual(viewModel.translation, "The cat eats.")
+        XCTAssertEqual(viewModel.result.tokens[0].definitions, ["cat"])
+    }
+
+    func testMarkTranslationUnavailableOnlyAffectsMissingTranslation() {
+        let baseResult = AnalysisResult(
+            originalImage: UIImage(),
+            recognizedText: "ねこ",
+            tokens: [Token(surface: "ねこ", reading: "ねこ", partOfSpeech: .noun, baseForm: "ねこ", inflectionType: nil, inflectionForm: nil)]
+        )
+
+        let viewModel = AnalysisViewModel(result: baseResult)
+        viewModel.beginTranslation()
+        viewModel.markTranslationUnavailable()
+
+        XCTAssertEqual(viewModel.translationState, .unavailable)
+        XCTAssertTrue(viewModel.showTranslationUnavailable)
+    }
+}
+
+final class DictionaryServiceTests: XCTestCase {
+    func testUsesCustomDatabaseWhenProvided() throws {
+        let databasePath = try makeDictionaryDatabase(entries: [
+            ("試験", "しけん", "exam; test", "noun", 2),
+        ])
+
+        let service = DictionaryService(databasePath: databasePath)
+        let entries = service.lookup(word: "試験")
+
+        XCTAssertEqual(service.databaseSource, .custom)
+        XCTAssertEqual(entries.first?.definitions, ["exam", "test"])
+    }
+
+    func testFallsBackToDevelopmentDatabaseWhenCustomDatabaseIsMissing() {
+        let service = DictionaryService(databasePath: "/tmp/does-not-exist-jouzu.sqlite")
+        let entries = service.lookup(word: "猫")
+
+        XCTAssertEqual(service.databaseSource, .development)
+        XCTAssertEqual(entries.first?.definitions, ["cat"])
+    }
+
+    func testEnrichTokensFallsBackToReadingLookup() throws {
+        let databasePath = try makeDictionaryDatabase(entries: [
+            ("猫", "ねこ", "cat", "noun", 1),
+        ])
+
+        let service = DictionaryService(databasePath: databasePath)
+        let token = Token(
+            surface: "ネコ",
+            reading: "ねこ",
+            partOfSpeech: .noun,
+            baseForm: "ネコ",
+            inflectionType: nil,
+            inflectionForm: nil
+        )
+
+        let enriched = service.enrichTokens([token])
+
+        XCTAssertEqual(enriched.first?.definitions, ["cat"])
+    }
+
+    func testEnrichTokensPrefersBaseFormBeforeSurface() throws {
+        let databasePath = try makeDictionaryDatabase(entries: [
+            ("食べる", "たべる", "to eat", "verb", 1),
+        ])
+
+        let service = DictionaryService(databasePath: databasePath)
+        let token = Token(
+            surface: "食べた",
+            reading: "たべた",
+            partOfSpeech: .verb,
+            baseForm: "食べる",
+            inflectionType: nil,
+            inflectionForm: nil
+        )
+
+        let enriched = service.enrichTokens([token])
+
+        XCTAssertEqual(enriched.first?.definitions, ["to eat"])
+    }
+
+    private func makeDictionaryDatabase(entries: [(String, String, String, String, Int32)]) throws -> String {
+        let fileURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension("sqlite")
+
+        var db: OpaquePointer?
+        guard sqlite3_open(fileURL.path, &db) == SQLITE_OK else {
+            throw NSError(domain: "DictionaryServiceTests", code: 1)
+        }
+
+        defer {
+            sqlite3_close(db)
+        }
+
+        let createSQL = """
+        CREATE TABLE entries (
+            id INTEGER PRIMARY KEY,
+            kanji TEXT,
+            reading TEXT,
+            definition TEXT,
+            pos TEXT,
+            priority INTEGER DEFAULT 9999
+        );
+        CREATE INDEX idx_kanji ON entries(kanji);
+        CREATE INDEX idx_reading ON entries(reading);
+        """
+        XCTAssertEqual(sqlite3_exec(db, createSQL, nil, nil, nil), SQLITE_OK)
+
+        let insertSQL = "INSERT INTO entries (kanji, reading, definition, pos, priority) VALUES (?, ?, ?, ?, ?)"
+        var statement: OpaquePointer?
+        XCTAssertEqual(sqlite3_prepare_v2(db, insertSQL, -1, &statement, nil), SQLITE_OK)
+
+        for entry in entries {
+            sqlite3_bind_text(statement, 1, (entry.0 as NSString).utf8String, -1, nil)
+            sqlite3_bind_text(statement, 2, (entry.1 as NSString).utf8String, -1, nil)
+            sqlite3_bind_text(statement, 3, (entry.2 as NSString).utf8String, -1, nil)
+            sqlite3_bind_text(statement, 4, (entry.3 as NSString).utf8String, -1, nil)
+            sqlite3_bind_int(statement, 5, entry.4)
+            XCTAssertEqual(sqlite3_step(statement), SQLITE_DONE)
+            sqlite3_reset(statement)
+            sqlite3_clear_bindings(statement)
+        }
+
+        sqlite3_finalize(statement)
+        return fileURL.path
     }
 }

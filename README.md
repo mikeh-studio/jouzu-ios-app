@@ -10,17 +10,20 @@ Jouzu is an iOS app that helps you learn Japanese from real-world text. Snap a p
 
 - **Camera OCR** - Recognize Japanese text from photos using the Vision framework
 - **Tokenization + filtering** - Split text with MeCab, then keep Japanese words only (non-Japanese tokens removed)
-- **Focused words view** - Capture analysis shows lexical words only (particles hidden)
+- **Unique words view** - Analysis shows unique vocabulary only, with grammar-only tokens hidden
+- **Clean English translation** - Analysis shows a cleaned full-text English translation when available
 - **Color-coded grammar** - Parts of speech highlighted at a glance for visible words
-- **Dictionary lookup** - Tap any word for definitions, readings, and inflection details
-- **On-device translation fallback** - Translation framework is used to backfill missing word definitions
+- **Bundled dictionary lookup** - A bundled JMdict subset provides broad offline definition coverage
+- **On-device translation fallback** - Translation framework backfills only unresolved word definitions
+- **Non-blocking analysis flow** - Switching photos no longer waits on translation to finish before opening Analysis
 - **Spaced repetition** - Save vocabulary to a built-in review system using the SM-2 algorithm
 
-## Today's Update (March 7, 2026)
+## Recent Changes (March 7, 2026)
 
-- Removed **Recognized Text** and **Translation** sections from the capture analysis screen.
-- Added filtering so non-Japanese tokens are removed before word enrichment/display.
-- Updated the **Words** section to show lexical words only and hide particles.
+- Fixed the photo-switching flow so a second upload does not get stuck on "Analyzing text..."
+- Added cleaned full-text English translation to the Analysis screen
+- Updated **Words** to show unique vocabulary only and hide single-character hiragana / grammar tokens
+- Bundled a JMdict subset so most words resolve locally before translation fallback is needed
 
 ## Screenshots
 
@@ -56,8 +59,10 @@ xcodebuild -scheme Jouzu -configuration Debug -destination 'platform=iOS Simulat
 MVVM with feature-based modules. The processing pipeline:
 
 ```text
-Camera -> OCR (Vision) -> Tokenize (MeCab) -> Filter (Japanese words only, no particles) -> Dictionary -> Grammar -> Optional definition translation fallback -> Display
+Camera -> OCR (Vision) -> Tokenize (MeCab) -> Filter -> Dictionary -> Grammar -> Show Analysis -> Optional translation enrichment
 ```
+
+Analysis opens as soon as OCR/tokenization/dictionary work completes. Full-text translation and unresolved word-definition fallback continue in the background and update the visible analysis in place.
 
 Each feature (Camera, Analysis, Vocabulary, Review) has its own View + ViewModel pair under `Jouzu/Features/`.
 
@@ -68,7 +73,13 @@ Each feature (Camera, Analysis, Vocabulary, Review) has its own View + ViewModel
 
 ## Dictionary Data Behavior
 
-`DictionaryService` first attempts to load a bundled `jmdict.sqlite` file. If it is not present, the app falls back to an in-memory development dictionary with seeded common entries.
+`DictionaryService` first attempts to load a bundled `jmdict.sqlite` file generated from JMdict priority-tagged entries. If it is not present, the app falls back to an in-memory development dictionary with seeded common entries.
+
+To regenerate the bundled subset after downloading the official source:
+
+```bash
+python3 scripts/generate_jmdict_subset.py --input /path/to/JMdict_e.gz --output Jouzu/Resources/jmdict.sqlite
+```
 
 ## Contributing
 
