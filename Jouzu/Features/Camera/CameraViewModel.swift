@@ -102,6 +102,10 @@ final class CameraViewModel {
         }
 
         let dictionary = dictionaryService
+        // TranslationSession is not Sendable, so nonisolated(unsafe) is required to pass it
+        // across the actor boundary. This is safe here because handleTranslationSession is always
+        // called from @MainActor (via .translationTask), so `session` is only ever accessed on
+        // the main actor throughout this function.
         nonisolated(unsafe) let s = session
 
         let enrichedTokens: [Token]
@@ -173,6 +177,8 @@ final class CameraViewModel {
         guard !text.isEmpty else { return nil }
 
         do {
+            // Same rationale as handleTranslationSession: session is not Sendable but is
+            // only accessed from the main actor context in this call chain.
             nonisolated(unsafe) let s = session
             let response = try await s.translate(text)
             let cleaned = AnalysisTextFormatter.cleanedTranslation(response.targetText)

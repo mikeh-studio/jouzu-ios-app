@@ -121,6 +121,7 @@ struct ReviewView: View {
                         .foregroundStyle(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
+                .accessibilityLabel("Show answer for \(card.word)")
                 .padding(.horizontal)
             }
 
@@ -151,6 +152,7 @@ struct ReviewView: View {
                     .foregroundStyle(ratingColor(rating))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
+                .accessibilityLabel("\(rating.label): next review in \(intervalPreview(for: rating))")
             }
         }
         .padding(.horizontal)

@@ -136,18 +136,30 @@ struct WordPopoverView: View {
 
     private func saveToVocab() {
         let exampleSentence = ExampleSentenceExtractor.extract(from: sourceText, token: token)
+        let capturedImage = sourceImage
+        let word = token.baseForm.isEmpty ? token.surface : token.baseForm
+        let reading = token.reading
+        let definition = token.definitions.joined(separator: "; ")
+        let pos = token.partOfSpeech.displayName
 
-        let card = VocabCard(
-            word: token.baseForm.isEmpty ? token.surface : token.baseForm,
-            reading: token.reading,
-            definition: token.definitions.joined(separator: "; "),
-            partOfSpeech: token.partOfSpeech.displayName,
-            exampleSentence: exampleSentence,
-            sourceImageData: sourceImage.flatMap { VocabCard.compressThumbnail(from: $0) }
-        )
-
-        modelContext.insert(card)
-        isSaved = true
+        Task {
+            let thumbnailData: Data?
+            if let img = capturedImage {
+                thumbnailData = await VocabCard.compressThumbnailAsync(from: img)
+            } else {
+                thumbnailData = nil
+            }
+            let card = VocabCard(
+                word: word,
+                reading: reading,
+                definition: definition,
+                partOfSpeech: pos,
+                exampleSentence: exampleSentence,
+                sourceImageData: thumbnailData
+            )
+            modelContext.insert(card)
+            isSaved = true
+        }
     }
 }
 

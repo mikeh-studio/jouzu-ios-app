@@ -82,9 +82,15 @@ struct CameraView: View {
             .onChange(of: selectedPhotoItem) { _, newItem in
                 guard let newItem else { return }
                 Task {
-                    if let data = try? await newItem.loadTransferable(type: Data.self),
-                       let image = UIImage(data: data) {
-                        viewModel.processImage(image)
+                    do {
+                        if let data = try await newItem.loadTransferable(type: Data.self),
+                           let image = UIImage(data: data) {
+                            viewModel.processImage(image)
+                        } else {
+                            viewModel.errorMessage = "Could not read the selected photo."
+                        }
+                    } catch {
+                        viewModel.errorMessage = "Failed to load photo: \(error.localizedDescription)"
                     }
                 }
                 selectedPhotoItem = nil

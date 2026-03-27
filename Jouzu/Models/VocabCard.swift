@@ -43,17 +43,22 @@ final class VocabCard {
         self.deckName = deckName
     }
 
-    /// Compressed thumbnail from source image (max 200x200)
+    /// Compressed thumbnail from source image (max 200×200, JPEG 0.6).
+    /// Call `compressThumbnailAsync` from async contexts to avoid blocking the main thread.
     static func compressThumbnail(from image: UIImage) -> Data? {
         let maxSize: CGFloat = 200
         let scale = min(maxSize / image.size.width, maxSize / image.size.height, 1.0)
         let newSize = CGSize(width: image.size.width * scale, height: image.size.height * scale)
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        return renderer.jpegData(withCompressionQuality: 0.6) { _ in
+            image.draw(in: CGRect(origin: .zero, size: newSize))
+        }
+    }
 
-        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
-        image.draw(in: CGRect(origin: .zero, size: newSize))
-        let thumbnail = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-
-        return thumbnail?.jpegData(compressionQuality: 0.6)
+    /// Async wrapper that performs thumbnail compression on a background thread.
+    static func compressThumbnailAsync(from image: UIImage) async -> Data? {
+        await Task.detached(priority: .utility) {
+            compressThumbnail(from: image)
+        }.value
     }
 }

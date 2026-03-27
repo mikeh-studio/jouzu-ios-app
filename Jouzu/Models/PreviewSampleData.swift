@@ -82,20 +82,17 @@ enum PreviewSampleData {
 
     static var sampleAnalysisResult: AnalysisResult {
         let size = CGSize(width: 400, height: 200)
-        UIGraphicsBeginImageContext(size)
-        let context = UIGraphicsGetCurrentContext()!
-        context.setFillColor(UIColor.systemGray5.cgColor)
-        context.fill(CGRect(origin: .zero, size: size))
-
-        let text = "猫が食べた魚" as NSString
-        let attrs: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 48),
-            .foregroundColor: UIColor.label,
-        ]
-        text.draw(at: CGPoint(x: 40, y: 70), withAttributes: attrs)
-
-        let image = UIGraphicsGetImageFromCurrentImageContext()!
-        UIGraphicsEndImageContext()
+        let renderer = UIGraphicsImageRenderer(size: size)
+        let image = renderer.image { _ in
+            UIColor.systemGray5.setFill()
+            UIRectFill(CGRect(origin: .zero, size: size))
+            let text = "猫が食べた魚" as NSString
+            let attrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 48),
+                .foregroundColor: UIColor.label,
+            ]
+            text.draw(at: CGPoint(x: 40, y: 70), withAttributes: attrs)
+        }
 
         return AnalysisResult(
             originalImage: image,

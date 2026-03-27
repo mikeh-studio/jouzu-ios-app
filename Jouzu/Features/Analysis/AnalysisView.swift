@@ -166,6 +166,24 @@ private struct TokenChipView: View {
                 )
         )
         .onTapGesture(perform: onTap)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityDescription)
+        .accessibilityHint("Tap to view definition and grammar details")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    private var accessibilityDescription: String {
+        var parts: [String] = []
+        if !token.reading.isEmpty && token.reading != token.surface {
+            parts.append("\(token.surface), read as \(token.reading)")
+        } else {
+            parts.append(token.surface)
+        }
+        parts.append(token.partOfSpeech.displayName)
+        if let first = token.definitions.first {
+            parts.append(first)
+        }
+        return parts.joined(separator: ", ")
     }
 }
 

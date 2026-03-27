@@ -6,6 +6,7 @@ struct VocabDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var isEditingExample = false
     @State private var exampleDraft = ""
+    @State private var saveError: String?
 
     var body: some View {
         NavigationStack {
@@ -90,6 +91,16 @@ struct VocabDetailView: View {
             .onAppear {
                 exampleDraft = normalizedExampleSentence ?? ""
             }
+            .alert("Save Failed", isPresented: Binding(
+                get: { saveError != nil },
+                set: { if !$0 { saveError = nil } }
+            )) {
+                Button("OK", role: .cancel) { saveError = nil }
+            } message: {
+                if let saveError {
+                    Text(saveError)
+                }
+            }
         }
     }
 
@@ -118,7 +129,11 @@ struct VocabDetailView: View {
                         let trimmed = exampleDraft.trimmingCharacters(in: .whitespacesAndNewlines)
                         card.exampleSentence = trimmed.isEmpty ? nil : trimmed
                         isEditingExample = false
-                        try? modelContext.save()
+                        do {
+                            try modelContext.save()
+                        } catch {
+                            saveError = error.localizedDescription
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                 }
