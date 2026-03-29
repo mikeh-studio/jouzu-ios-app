@@ -3,7 +3,13 @@ import SwiftData
 
 struct ReviewView: View {
     @State private var viewModel = ReviewViewModel()
+    private let loadsCardsOnAppear: Bool
     @Environment(\.modelContext) private var modelContext
+
+    init(viewModel: ReviewViewModel = ReviewViewModel(), loadsCardsOnAppear: Bool = true) {
+        _viewModel = State(initialValue: viewModel)
+        self.loadsCardsOnAppear = loadsCardsOnAppear
+    }
 
     var body: some View {
         NavigationStack {
@@ -36,7 +42,9 @@ struct ReviewView: View {
                 }
             }
             .onAppear {
-                viewModel.loadDueCards(from: modelContext)
+                if loadsCardsOnAppear {
+                    viewModel.loadDueCards(from: modelContext)
+                }
             }
         }
     }

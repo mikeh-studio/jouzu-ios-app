@@ -170,6 +170,20 @@ final class JapaneseTokenFilterTests: XCTestCase {
         XCTAssertEqual(filtered.map(\.surface), ["食べた", "猫"])
     }
 
+    func testUniqueVocabularyTokensFiltersGrammarDenyList() {
+        let tokens: [Token] = [
+            Token(surface: "です", reading: "です", partOfSpeech: .unknown, baseForm: "です", inflectionType: nil, inflectionForm: nil),
+            Token(surface: "ます", reading: "ます", partOfSpeech: .unknown, baseForm: "ます", inflectionType: nil, inflectionForm: nil),
+            Token(surface: "た", reading: "た", partOfSpeech: .unknown, baseForm: "た", inflectionType: nil, inflectionForm: nil),
+            Token(surface: "ました", reading: "ました", partOfSpeech: .unknown, baseForm: "ます", inflectionType: nil, inflectionForm: nil),
+            Token(surface: "食べる", reading: "たべる", partOfSpeech: .verb, baseForm: "食べる", inflectionType: nil, inflectionForm: nil),
+        ]
+
+        let filtered = JapaneseTokenFilter.uniqueVocabularyTokens(from: tokens)
+
+        XCTAssertEqual(filtered.map(\.surface), ["食べる"])
+    }
+
     func testUniqueVocabularyTokensRemovesSingleHiraganaAndGrammarTokens() {
         let tokens: [Token] = [
             Token(surface: "で", reading: "で", partOfSpeech: .particle, baseForm: "で", inflectionType: nil, inflectionForm: nil),
@@ -253,7 +267,7 @@ final class AnalysisViewModelTests: XCTestCase {
 final class DictionaryServiceTests: XCTestCase {
     func testUsesCustomDatabaseWhenProvided() throws {
         let databasePath = try makeDictionaryDatabase(entries: [
-            ("試験", "しけん", "exam; test", "noun", 2),
+            ("試験", "しけん", "exam; test", "noun", 2, nil),
         ])
 
         let service = DictionaryService(databasePath: databasePath)
@@ -273,7 +287,7 @@ final class DictionaryServiceTests: XCTestCase {
 
     func testEnrichTokensFallsBackToReadingLookup() throws {
         let databasePath = try makeDictionaryDatabase(entries: [
-            ("猫", "ねこ", "cat", "noun", 1),
+            ("猫", "ねこ", "cat", "noun", 1, nil),
         ])
 
         let service = DictionaryService(databasePath: databasePath)
@@ -293,7 +307,7 @@ final class DictionaryServiceTests: XCTestCase {
 
     func testEnrichTokensPrefersBaseFormBeforeSurface() throws {
         let databasePath = try makeDictionaryDatabase(entries: [
-            ("食べる", "たべる", "to eat", "verb", 1),
+            ("食べる", "たべる", "to eat", "verb", 1, nil),
         ])
 
         let service = DictionaryService(databasePath: databasePath)
@@ -311,7 +325,49 @@ final class DictionaryServiceTests: XCTestCase {
         XCTAssertEqual(enriched.first?.definitions, ["to eat"])
     }
 
-    private func makeDictionaryDatabase(entries: [(String, String, String, String, Int32)]) throws -> String {
+    func testLookupReturnsJLPTLevelWhenPresent() throws {
+        let databasePath = try makeDictionaryDatabase(entries: [
+            ("猫", "ねこ", "cat", "noun", 1, 4),
+        ])
+
+        let service = DictionaryService(databasePath: databasePath)
+        let entries = service.lookup(word: "猫")
+
+        XCTAssertEqual(entries.first?.jlptLevel, 4)
+    }
+
+    func testLookupReturnsNilJLPTLevelForUnclassifiedWord() throws {
+        let databasePath = try makeDictionaryDatabase(entries: [
+            ("薔薇", "ばら", "rose", "noun", 1, nil),
+        ])
+
+        let service = DictionaryService(databasePath: databasePath)
+        let entries = service.lookup(word: "薔薇")
+
+        XCTAssertNil(entries.first?.jlptLevel)
+    }
+
+    func testEnrichTokensPassesJLPTLevel() throws {
+        let databasePath = try makeDictionaryDatabase(entries: [
+            ("食べる", "たべる", "to eat", "verb", 1, 5),
+        ])
+
+        let service = DictionaryService(databasePath: databasePath)
+        let token = Token(
+            surface: "食べた",
+            reading: "たべた",
+            partOfSpeech: .verb,
+            baseForm: "食べる",
+            inflectionType: nil,
+            inflectionForm: nil
+        )
+
+        let enriched = service.enrichTokens([token])
+
+        XCTAssertEqual(enriched.first?.jlptLevel, 5)
+    }
+
+    private func makeDictionaryDatabase(entries: [(String, String, String, String, Int32, Int32?)]) throws -> String {
         let fileURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
             .appendingPathExtension("sqlite")
@@ -332,14 +388,15 @@ final class DictionaryServiceTests: XCTestCase {
             reading TEXT,
             definition TEXT,
             pos TEXT,
-            priority INTEGER DEFAULT 9999
+            priority INTEGER DEFAULT 9999,
+            jlpt_level INTEGER
         );
         CREATE INDEX idx_kanji ON entries(kanji);
         CREATE INDEX idx_reading ON entries(reading);
         """
         XCTAssertEqual(sqlite3_exec(db, createSQL, nil, nil, nil), SQLITE_OK)
 
-        let insertSQL = "INSERT INTO entries (kanji, reading, definition, pos, priority) VALUES (?, ?, ?, ?, ?)"
+        let insertSQL = "INSERT INTO entries (kanji, reading, definition, pos, priority, jlpt_level) VALUES (?, ?, ?, ?, ?, ?)"
         var statement: OpaquePointer?
         XCTAssertEqual(sqlite3_prepare_v2(db, insertSQL, -1, &statement, nil), SQLITE_OK)
 
@@ -349,6 +406,11 @@ final class DictionaryServiceTests: XCTestCase {
             sqlite3_bind_text(statement, 3, (entry.2 as NSString).utf8String, -1, nil)
             sqlite3_bind_text(statement, 4, (entry.3 as NSString).utf8String, -1, nil)
             sqlite3_bind_int(statement, 5, entry.4)
+            if let jlpt = entry.5 {
+                sqlite3_bind_int(statement, 6, jlpt)
+            } else {
+                sqlite3_bind_null(statement, 6)
+            }
             XCTAssertEqual(sqlite3_step(statement), SQLITE_DONE)
             sqlite3_reset(statement)
             sqlite3_clear_bindings(statement)

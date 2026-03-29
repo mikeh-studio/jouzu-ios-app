@@ -146,8 +146,19 @@ private struct TokenChipView: View {
                     .font(.system(size: 9))
                     .foregroundStyle(.secondary)
             }
-            Text(token.surface)
-                .font(.callout)
+            HStack(spacing: 4) {
+                Text(token.surface)
+                    .font(.callout)
+                if let level = token.jlptLevel {
+                    Text("N\(level)")
+                        .font(.system(size: 8, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 3)
+                        .padding(.vertical, 1)
+                        .background(Color(.tertiarySystemFill))
+                        .clipShape(RoundedRectangle(cornerRadius: 3))
+                }
+            }
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
