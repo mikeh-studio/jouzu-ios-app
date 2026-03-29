@@ -26,6 +26,7 @@
 		C00B0DB85A86F2EFCEC405D5 /* SM2AlgorithmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D9F200CD178A24005A85C5 /* SM2AlgorithmTests.swift */; };
 		C45EC7204B00DD4051F93BA6 /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BA1D562B9FCE55A91A5B85 /* ReviewView.swift */; };
 		C949022CE22F0DE582351D5E /* IPADic in Frameworks */ = {isa = PBXBuildFile; productRef = D6CF57FDBEE726A3D12E28E6 /* IPADic */; };
+		D8E4C0A1B2C3D4E5F6071829 /* ScreenshotSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E4C0A1B2C3D4E5F6071830 /* ScreenshotSupport.swift */; };
 		D1BDDA82492A90D32F1F46B4 /* AnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5B0723BA6000946551F0EE /* AnalysisViewModel.swift */; };
 		D4B420C43678712E11E2369E /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B6E142A4A190DD20E47727 /* Token.swift */; };
 		E16BC1F103FAC4F58D9BAC86 /* Mecab-Swift in Frameworks */ = {isa = PBXBuildFile; productRef = F5BAA1C7C37C7C351885F26B /* Mecab-Swift */; };
@@ -34,6 +35,7 @@
 		FE843FC6EED2B6A3B9E25483 /* ReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C5DCE6FB7F788D8A3DA183 /* ReviewViewModel.swift */; };
 		FE84B10FFA450C26C0E61A57 /* VocabListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FD909C9C16F66ACECB876B /* VocabListViewModel.swift */; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* VocabDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F2A3 /* VocabDetailView.swift */; };
+		F1A2B3C4D5E6F708192A3B4C /* ScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F708192A3B4D /* ScreenshotTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,9 +74,11 @@
 		94B6E142A4A190DD20E47727 /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		A19B7343725667BF55DFF9DF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A9C1D2E3F4A5B6C7D8E9F002 /* jmdict.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = Resources/jmdict.sqlite; sourceTree = "<group>"; };
+		D8E4C0A1B2C3D4E5F6071830 /* ScreenshotSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotSupport.swift; sourceTree = "<group>"; };
 		F4C5DCE6FB7F788D8A3DA183 /* ReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewViewModel.swift; sourceTree = "<group>"; };
 		FD56EC16DE7EDFB0F31F17AF /* SM2Algorithm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SM2Algorithm.swift; sourceTree = "<group>"; };
 		B2C3D4E5F6A7B8C9D0E1F2A3 /* VocabDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabDetailView.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E6F708192A3B4D /* ScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +130,7 @@
 			children = (
 				A19B7343725667BF55DFF9DF /* ContentView.swift */,
 				8AE897B3247E84A3F958704D /* JouzuApp.swift */,
+				D8E4C0A1B2C3D4E5F6071830 /* ScreenshotSupport.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -144,6 +149,7 @@
 			isa = PBXGroup;
 			children = (
 				37D9F200CD178A24005A85C5 /* SM2AlgorithmTests.swift */,
+				F1A2B3C4D5E6F708192A3B4D /* ScreenshotTests.swift */,
 			);
 			path = JouzuTests;
 			sourceTree = "<group>";
@@ -324,6 +330,7 @@
 				482CEA492274CC6C7123D437 /* PreviewSampleData.swift in Sources */,
 				C45EC7204B00DD4051F93BA6 /* ReviewView.swift in Sources */,
 				FE843FC6EED2B6A3B9E25483 /* ReviewViewModel.swift in Sources */,
+				D8E4C0A1B2C3D4E5F6071829 /* ScreenshotSupport.swift in Sources */,
 				B5AE12D7ED12891AB8A3078A /* SM2Algorithm.swift in Sources */,
 				D4B420C43678712E11E2369E /* Token.swift in Sources */,
 				B4FEF23A95153C6B17141805 /* TokenizerService.swift in Sources */,
@@ -340,6 +347,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C00B0DB85A86F2EFCEC405D5 /* SM2AlgorithmTests.swift in Sources */,
+				F1A2B3C4D5E6F708192A3B4C /* ScreenshotTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

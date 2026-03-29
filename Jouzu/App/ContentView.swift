@@ -3,6 +3,10 @@ import SwiftUI
 struct ContentView: View {
     @State private var selectedTab = 0
 
+    init(selectedTab: Int = 0) {
+        _selectedTab = State(initialValue: selectedTab)
+    }
+
     var body: some View {
         TabView(selection: $selectedTab) {
             CameraView()

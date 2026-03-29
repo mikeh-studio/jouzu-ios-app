@@ -13,6 +13,9 @@ struct Token: Identifiable, Hashable {
     /// Definition from JMdict, populated after dictionary lookup
     var definitions: [String] = []
 
+    /// JLPT proficiency level (1–5, where 5 = N5/easiest), nil if unclassified
+    var jlptLevel: Int?
+
     /// Grammar explanation from rule-based engine
     var grammarNote: String?
 
@@ -193,9 +196,25 @@ enum JapaneseTokenFilter {
             break
         }
 
+        // MeCab-Swift's IPADic maps auxiliary verbs to .unknown, so they
+        // bypass the POS check above. Catch them by surface/base form.
+        if grammarSurfaceDenyList.contains(token.surface) ||
+           grammarSurfaceDenyList.contains(token.baseForm) {
+            return false
+        }
+
         let dedupeText = normalizedWordText(for: token)
         return !isSingleHiraganaToken(dedupeText)
     }
+
+    private static let grammarSurfaceDenyList: Set<String> = [
+        // Auxiliary verbs (助動詞) — MeCab tags these as .unknown
+        "です", "ます", "た", "だ", "ない",
+        "れる", "られる", "せる", "させる", "たい",
+        "らしい", "ようだ", "そうだ", "べき",
+        // Conjugated copula / endings
+        "でした", "ました", "ません", "だった",
+    ]
 
     private static func normalizedWordText(for token: Token) -> String {
         let candidate = token.baseForm.trimmingCharacters(in: .whitespacesAndNewlines)
