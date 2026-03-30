@@ -46,7 +46,7 @@ struct WordPopoverView: View {
 
             Divider()
 
-            // Part of speech
+            // Part of speech + JLPT level
             HStack {
                 Text(token.partOfSpeech.displayName)
                     .font(.caption.bold())
@@ -55,6 +55,16 @@ struct WordPopoverView: View {
                     .background(GrammarHighlighter.backgroundColor(for: token.partOfSpeech))
                     .foregroundStyle(GrammarHighlighter.color(for: token.partOfSpeech))
                     .clipShape(Capsule())
+
+                if let level = token.jlptLevel {
+                    Text("JLPT N\(level)")
+                        .font(.caption.bold())
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color(.tertiarySystemFill))
+                        .foregroundStyle(.secondary)
+                        .clipShape(Capsule())
+                }
 
                 if let inflection = token.inflectionType {
                     Text(inflection)

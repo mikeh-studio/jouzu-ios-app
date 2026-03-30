@@ -14,6 +14,7 @@ enum PreviewSampleData {
             inflectionType: nil,
             inflectionForm: nil,
             definitions: ["cat"],
+            jlptLevel: 4,
             grammarNote: nil
         ),
         Token(
@@ -34,6 +35,7 @@ enum PreviewSampleData {
             inflectionType: "連用タ接続",
             inflectionForm: "一段",
             definitions: ["to eat"],
+            jlptLevel: 5,
             grammarNote: "Verb (ichidan/る-verb) — ta-connection form. Past (plain) form"
         ),
         Token(
@@ -44,17 +46,18 @@ enum PreviewSampleData {
             inflectionType: nil,
             inflectionForm: nil,
             definitions: ["fish"],
+            jlptLevel: 4,
             grammarNote: nil
         ),
         Token(
-            surface: "を",
-            reading: "を",
+            surface: "は",
+            reading: "は",
             partOfSpeech: .particle,
-            baseForm: "を",
+            baseForm: "は",
             inflectionType: nil,
             inflectionForm: nil,
             definitions: [],
-            grammarNote: "Object marker: indicates the direct object of the verb"
+            grammarNote: "Topic marker: highlights what the sentence is about"
         ),
         Token(
             surface: "美味しい",
@@ -64,6 +67,7 @@ enum PreviewSampleData {
             inflectionType: nil,
             inflectionForm: nil,
             definitions: ["delicious", "tasty"],
+            jlptLevel: 4,
             grammarNote: "i-adjective"
         ),
         Token(
@@ -78,7 +82,7 @@ enum PreviewSampleData {
         ),
     ]
 
-    static let sampleText = "猫が食べた魚を美味しいです"
+    static let sampleText = "猫が食べた魚は美味しいです。"
 
     static var sampleAnalysisResult: AnalysisResult {
         let size = CGSize(width: 400, height: 200)
@@ -106,13 +110,14 @@ enum PreviewSampleData {
         word: String = "食べる",
         reading: String = "たべる",
         definition: String = "to eat",
+        partOfSpeech: String = "Verb",
         dueInDays: Int = 0
     ) -> VocabCard {
         let card = VocabCard(
             word: word,
             reading: reading,
             definition: definition,
-            partOfSpeech: "Verb",
+            partOfSpeech: partOfSpeech,
             exampleSentence: "猫が魚を食べる"
         )
         card.srsDueDate = Calendar.current.date(byAdding: .day, value: dueInDays, to: Date())!
@@ -126,11 +131,11 @@ enum PreviewSampleData {
 
         // Insert sample cards
         let samples = [
-            sampleVocabCard(word: "食べる", reading: "たべる", definition: "to eat", dueInDays: 0),
-            sampleVocabCard(word: "猫", reading: "ねこ", definition: "cat", dueInDays: 0),
-            sampleVocabCard(word: "学校", reading: "がっこう", definition: "school", dueInDays: 3),
-            sampleVocabCard(word: "美しい", reading: "うつくしい", definition: "beautiful", dueInDays: 7),
-            sampleVocabCard(word: "走る", reading: "はしる", definition: "to run", dueInDays: -1),
+            sampleVocabCard(word: "食べる", reading: "たべる", definition: "to eat", partOfSpeech: "Verb", dueInDays: 0),
+            sampleVocabCard(word: "猫", reading: "ねこ", definition: "cat", partOfSpeech: "Noun", dueInDays: 0),
+            sampleVocabCard(word: "学校", reading: "がっこう", definition: "school", partOfSpeech: "Noun", dueInDays: 3),
+            sampleVocabCard(word: "美しい", reading: "うつくしい", definition: "beautiful", partOfSpeech: "i-Adjective", dueInDays: 7),
+            sampleVocabCard(word: "走る", reading: "はしる", definition: "to run", partOfSpeech: "Verb", dueInDays: -1),
         ]
         for card in samples {
             container.mainContext.insert(card)

@@ -2,6 +2,7 @@
 
 import argparse
 import gzip
+import json
 import os
 import sqlite3
 import tempfile
@@ -36,6 +37,11 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=6,
         help="Maximum number of English glosses stored per entry.",
+    )
+    parser.add_argument(
+        "--jlpt-map",
+        default=None,
+        help="Path to jlpt_levels.json mapping word forms to JLPT levels (1-5).",
     )
     return parser.parse_args()
 
@@ -125,7 +131,8 @@ def entry_rows(
     entry: ET.Element,
     max_glosses: int,
     include_all: bool,
-) -> tuple[list[tuple[str, str, str, str, int]], bool]:
+    jlpt_map: dict[str, int] | None = None,
+) -> tuple[list[tuple[str, str, str, str, int, int | None]], bool]:
     rank = priority_rank(entry)
     if rank is None and not include_all:
         return [], False
@@ -142,15 +149,23 @@ def entry_rows(
     pos = part_of_speech(entry)
     definition_text = "; ".join(definitions)
     stored_rank = rank if rank is not None else 9999
-    rows: set[tuple[str, str, str, str, int]] = set()
+    rows: set[tuple[str, str, str, str, int, int | None]] = set()
+
+    # Look up JLPT level from kanji or reading forms
+    jlpt_level: int | None = None
+    if jlpt_map:
+        for term in kanji_terms + reading_terms:
+            if term in jlpt_map:
+                jlpt_level = jlpt_map[term]
+                break
 
     if kanji_terms:
         for word in kanji_terms:
             for reading in reading_terms:
-                rows.add((word, reading, definition_text, pos, stored_rank))
+                rows.add((word, reading, definition_text, pos, stored_rank, jlpt_level))
     else:
         for reading in reading_terms:
-            rows.add((reading, reading, definition_text, pos, stored_rank))
+            rows.add((reading, reading, definition_text, pos, stored_rank, jlpt_level))
 
     return sorted(rows), rank is not None
 
@@ -168,11 +183,13 @@ def init_database(path: str) -> sqlite3.Connection:
             reading TEXT NOT NULL,
             definition TEXT NOT NULL,
             pos TEXT NOT NULL,
-            priority INTEGER NOT NULL DEFAULT 9999
+            priority INTEGER NOT NULL DEFAULT 9999,
+            jlpt_level INTEGER
         );
         CREATE INDEX idx_kanji ON entries(kanji);
         CREATE INDEX idx_reading ON entries(reading);
         CREATE INDEX idx_priority ON entries(priority);
+        CREATE INDEX idx_jlpt ON entries(jlpt_level);
         """
     )
     return connection
@@ -188,19 +205,26 @@ def main() -> None:
     if os.path.exists(args.output):
         os.remove(args.output)
 
+    jlpt_map: dict[str, int] | None = None
+    if args.jlpt_map:
+        with open(args.jlpt_map, "r", encoding="utf-8") as f:
+            jlpt_map = json.load(f)
+        print(f"Loaded JLPT map with {len(jlpt_map)} entries")
+
     connection = init_database(temp_path)
     cursor = connection.cursor()
-    insert_sql = "INSERT INTO entries (kanji, reading, definition, pos, priority) VALUES (?, ?, ?, ?, ?)"
+    insert_sql = "INSERT INTO entries (kanji, reading, definition, pos, priority, jlpt_level) VALUES (?, ?, ?, ?, ?, ?)"
 
     total_entries = 0
     included_entries = 0
     priority_entries = 0
     total_rows = 0
+    jlpt_tagged = 0
 
     try:
         for entry in iter_entries(args.input):
             total_entries += 1
-            rows, had_priority = entry_rows(entry, args.max_glosses, args.all_entries)
+            rows, had_priority = entry_rows(entry, args.max_glosses, args.all_entries, jlpt_map)
             if had_priority:
                 priority_entries += 1
             if not rows:
@@ -209,6 +233,8 @@ def main() -> None:
             cursor.executemany(insert_sql, rows)
             included_entries += 1
             total_rows += len(rows)
+            if any(row[5] is not None for row in rows):
+                jlpt_tagged += 1
 
         connection.commit()
     finally:
@@ -217,7 +243,8 @@ def main() -> None:
     os.replace(temp_path, args.output)
     print(
         f"Generated {args.output} with {included_entries} entries / {total_rows} rows "
-        f"(JMdict total entries: {total_entries}, priority-tagged entries: {priority_entries})"
+        f"(JMdict total entries: {total_entries}, priority-tagged entries: {priority_entries}, "
+        f"JLPT-tagged entries: {jlpt_tagged})"
     )
 
 

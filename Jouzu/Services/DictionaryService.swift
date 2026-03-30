@@ -24,6 +24,7 @@ final class DictionaryService: Sendable {
         let reading: String
         let definitions: [String]
         let partOfSpeech: String
+        let jlptLevel: Int?
     }
 
     init(databasePath: String? = Bundle.main.path(forResource: "jmdict", ofType: "sqlite")) {
@@ -66,7 +67,8 @@ final class DictionaryService: Sendable {
             reading TEXT,
             definition TEXT,
             pos TEXT,
-            priority INTEGER DEFAULT 9999
+            priority INTEGER DEFAULT 9999,
+            jlpt_level INTEGER
         );
         CREATE INDEX IF NOT EXISTS idx_kanji ON entries(kanji);
         CREATE INDEX IF NOT EXISTS idx_reading ON entries(reading);
@@ -637,7 +639,7 @@ final class DictionaryService: Sendable {
             ("そうですか", "そうですか", "is that so?", "expression"),
         ]
 
-        let insertSQL = "INSERT INTO entries (kanji, reading, definition, pos, priority) VALUES (?, ?, ?, ?, ?)"
+        let insertSQL = "INSERT INTO entries (kanji, reading, definition, pos, priority, jlpt_level) VALUES (?, ?, ?, ?, ?, ?)"
         var stmt: OpaquePointer?
 
         if sqlite3_prepare_v2(db, insertSQL, -1, &stmt, nil) == SQLITE_OK {
@@ -647,6 +649,8 @@ final class DictionaryService: Sendable {
                 sqlite3_bind_text(stmt, 3, (entry.2 as NSString).utf8String, -1, nil)
                 sqlite3_bind_text(stmt, 4, (entry.3 as NSString).utf8String, -1, nil)
                 sqlite3_bind_int(stmt, 5, 9999)
+                // JLPT level left NULL for dev database seed entries
+                sqlite3_bind_null(stmt, 6)
                 sqlite3_step(stmt)
                 sqlite3_reset(stmt)
                 sqlite3_clear_bindings(stmt)
@@ -664,7 +668,7 @@ final class DictionaryService: Sendable {
         guard !trimmed.isEmpty else { return [] }
 
         let query = """
-        SELECT kanji, reading, definition, pos
+        SELECT kanji, reading, definition, pos, jlpt_level
         FROM entries
         WHERE kanji = ? OR reading = ?
         ORDER BY CASE WHEN kanji = ? THEN 0 ELSE 1 END, priority ASC, LENGTH(kanji) ASC
@@ -685,6 +689,9 @@ final class DictionaryService: Sendable {
             let reading = sqlite3_column_text(stmt, 1).map(String.init(cString:)) ?? ""
             let definition = sqlite3_column_text(stmt, 2).map(String.init(cString:)) ?? ""
             let pos = sqlite3_column_text(stmt, 3).map(String.init(cString:)) ?? ""
+            let jlpt: Int? = sqlite3_column_type(stmt, 4) == SQLITE_NULL
+                ? nil
+                : Int(sqlite3_column_int(stmt, 4))
 
             guard !kanji.isEmpty else { continue }
             let dedupeKey = [kanji, reading, definition, pos].joined(separator: "\u{1F}")
@@ -694,7 +701,8 @@ final class DictionaryService: Sendable {
                 word: kanji,
                 reading: reading,
                 definitions: definition.components(separatedBy: "; "),
-                partOfSpeech: pos
+                partOfSpeech: pos,
+                jlptLevel: jlpt
             ))
         }
 
@@ -709,6 +717,7 @@ final class DictionaryService: Sendable {
 
             if let entry = lookupEntries(for: token).first {
                 enriched.definitions = entry.definitions
+                enriched.jlptLevel = entry.jlptLevel
 
                 let dictionaryPOS = PartOfSpeech(dictionaryPOS: entry.partOfSpeech)
                 if dictionaryPOS != .unknown &&
