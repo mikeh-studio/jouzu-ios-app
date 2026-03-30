@@ -66,13 +66,13 @@ struct ScreenshotRootView: View {
         guard destination == .vocabulary || destination == .review else { return }
 
         let descriptor = FetchDescriptor<VocabCard>()
-        guard ((try? modelContext.fetchCount(descriptor)) ?? 0) == 0 else { return }
+        guard (try? modelContext.fetchCount(descriptor)) == 0 else { return }
 
         for card in screenshotSampleCards() {
             modelContext.insert(card)
         }
 
-        try? modelContext.save()
+        try? modelContext.save() // Screenshot seeding — failure is non-critical
     }
 
     private func screenshotSampleCards() -> [VocabCard] {
@@ -86,7 +86,10 @@ struct ScreenshotRootView: View {
 }
 
 private struct AnalysisDetailScreenshotView: View {
-    private let token = PreviewSampleData.sampleTokens[3]
+    // Use a noun token with a definition for a representative detail screenshot
+    private let token = PreviewSampleData.sampleTokens.first(where: {
+        $0.partOfSpeech == .noun && !$0.definitions.isEmpty
+    }) ?? PreviewSampleData.sampleTokens[0]
 
     var body: some View {
         ZStack {

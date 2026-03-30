@@ -191,6 +191,9 @@ private struct TokenChipView: View {
             parts.append(token.surface)
         }
         parts.append(token.partOfSpeech.displayName)
+        if let level = token.jlptLevel {
+            parts.append("JLPT N\(level)")
+        }
         if let first = token.definitions.first {
             parts.append(first)
         }
