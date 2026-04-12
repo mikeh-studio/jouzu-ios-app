@@ -33,7 +33,7 @@ final class ReviewViewModel {
         reviewMode = .due
         let now = Date()
         let predicate = #Predicate<VocabCard> { card in
-            card.srsDueDate <= now
+            card.srsDueDate <= now && card.deletedAt == nil
         }
         let descriptor = FetchDescriptor<VocabCard>(
             predicate: predicate,
@@ -54,7 +54,11 @@ final class ReviewViewModel {
     func loadAllCards(from context: ModelContext) {
         reviewMode = .practiceAll
         updateSRS = false
-        let descriptor = FetchDescriptor<VocabCard>()
+        let descriptor = FetchDescriptor<VocabCard>(
+            predicate: #Predicate<VocabCard> { card in
+                card.deletedAt == nil
+            }
+        )
 
         do {
             dueCards = try context.fetch(descriptor).shuffled()

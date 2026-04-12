@@ -8,6 +8,7 @@ struct WordPopoverView: View {
     let onDismiss: () -> Void
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(SyncCoordinator.self) private var syncCoordinator
     @State private var isSaved = false
     @State private var isDuplicate = false
 
@@ -137,11 +138,18 @@ struct WordPopoverView: View {
 
     private func checkDuplicate() {
         let word = token.baseForm.isEmpty ? token.surface : token.baseForm
+        let reading = token.reading
+        let deckName = "Default"
+        let ownerId = AppUserIdentity.currentOwnerId()
         let predicate = #Predicate<VocabCard> { card in
-            card.word == word
+            card.word == word &&
+            card.reading == reading &&
+            card.deckName == deckName &&
+            card.deletedAt == nil
         }
         let descriptor = FetchDescriptor<VocabCard>(predicate: predicate)
-        isDuplicate = (try? modelContext.fetchCount(descriptor)) ?? 0 > 0
+        let matches = (try? modelContext.fetch(descriptor)) ?? []
+        isDuplicate = matches.contains { $0.resolvedOwnerId == ownerId }
     }
 
     private func saveToVocab() {
@@ -153,11 +161,16 @@ struct WordPopoverView: View {
             definition: token.definitions.joined(separator: "; "),
             partOfSpeech: token.partOfSpeech.displayName,
             exampleSentence: exampleSentence,
-            sourceImageData: sourceImage.flatMap { VocabCard.compressThumbnail(from: $0) }
+            sourceImageData: sourceImage.flatMap { VocabCard.compressThumbnail(from: $0) },
+            source: "analysis"
         )
 
         modelContext.insert(card)
+        try? modelContext.save()
         isSaved = true
+        Task { @MainActor in
+            await syncCoordinator.syncNow(context: modelContext)
+        }
     }
 }
 
@@ -170,6 +183,7 @@ struct WordPopoverView: View {
     )
     .padding()
     .modelContainer(PreviewSampleData.previewModelContainer)
+    .environment(SyncCoordinator.preview)
 }
 
 #Preview("Noun") {
@@ -181,4 +195,5 @@ struct WordPopoverView: View {
     )
     .padding()
     .modelContainer(PreviewSampleData.previewModelContainer)
+    .environment(SyncCoordinator.preview)
 }

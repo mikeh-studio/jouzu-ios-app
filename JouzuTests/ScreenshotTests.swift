@@ -45,6 +45,7 @@ final class ScreenshotTests: XCTestCase {
     private func renderScreenshot<Content: View>(named name: String, view: Content) throws {
         let content = view
             .modelContainer(PreviewSampleData.previewModelContainer)
+            .environment(SyncCoordinator.preview)
             .frame(width: screenshotSize.width, height: screenshotSize.height)
             .background(Color(.systemBackground))
             .environment(\.dynamicTypeSize, .medium)

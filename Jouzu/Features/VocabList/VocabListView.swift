@@ -3,10 +3,14 @@ import SwiftData
 import UniformTypeIdentifiers
 
 struct VocabListView: View {
-    @Query private var allCards: [VocabCard]
+    @Query(filter: #Predicate<VocabCard> { card in
+        card.deletedAt == nil
+    }) private var allCards: [VocabCard]
     @State private var viewModel = VocabListViewModel()
     @State private var selectedCard: VocabCard?
+    @State private var showSyncSheet = false
     @Environment(\.modelContext) private var modelContext
+    @Environment(SyncCoordinator.self) private var syncCoordinator
 
     var body: some View {
         NavigationStack {
@@ -22,6 +26,7 @@ struct VocabListView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 12) {
+                        syncButton
                         importButton
                         if !allCards.isEmpty {
                             groupToggle
@@ -39,6 +44,11 @@ struct VocabListView: View {
                 case .success(let urls):
                     guard let url = urls.first else { return }
                     viewModel.importResult = viewModel.importCSV(from: url, context: modelContext)
+                    if viewModel.importResult?.importedCount ?? 0 > 0 {
+                        Task { @MainActor in
+                            await syncCoordinator.syncNow(context: modelContext)
+                        }
+                    }
                 case .failure:
                     viewModel.importResult = VocabListViewModel.ImportResult(
                         importedCount: 0, skippedCount: 0, errors: ["Could not open file."]
@@ -55,6 +65,9 @@ struct VocabListView: View {
             .sheet(item: $selectedCard) { card in
                 VocabDetailView(card: card)
                     .presentationDetents([.medium, .large])
+            }
+            .sheet(isPresented: $showSyncSheet) {
+                SyncStatusView()
             }
         }
     }
@@ -131,7 +144,11 @@ struct VocabListView: View {
             .onDelete { indexSet in
                 let filtered = viewModel.filteredCards(allCards)
                 for index in indexSet {
-                    modelContext.delete(filtered[index])
+                    filtered[index].markDeleted()
+                }
+                try? modelContext.save()
+                Task { @MainActor in
+                    await syncCoordinator.syncNow(context: modelContext)
                 }
             }
         }
@@ -155,7 +172,11 @@ struct VocabListView: View {
                     }
                     .onDelete { indexSet in
                         for index in indexSet {
-                            modelContext.delete(cards[index])
+                            cards[index].markDeleted()
+                        }
+                        try? modelContext.save()
+                        Task { @MainActor in
+                            await syncCoordinator.syncNow(context: modelContext)
                         }
                     }
                 } header: {
@@ -221,6 +242,15 @@ struct VocabListView: View {
 
     // MARK: - Import
 
+    private var syncButton: some View {
+        Button {
+            showSyncSheet = true
+        } label: {
+            Image(systemName: syncIconName)
+        }
+        .foregroundStyle(syncIconColor)
+    }
+
     private var importButton: some View {
         Button {
             viewModel.showFileImporter = true
@@ -256,6 +286,34 @@ struct VocabListView: View {
             systemImage: "character.book.closed",
             description: Text("Take a photo of Japanese text and tap words to save them here.")
         )
+    }
+
+    private var syncIconName: String {
+        switch syncCoordinator.status {
+        case .idle:
+            return "arrow.trianglehead.2.clockwise"
+        case .syncing:
+            return "arrow.trianglehead.2.clockwise.circle.fill"
+        case .succeeded:
+            return "checkmark.icloud"
+        case .failed:
+            return "exclamationmark.icloud"
+        case .disabled:
+            return "icloud.slash"
+        }
+    }
+
+    private var syncIconColor: Color {
+        switch syncCoordinator.status {
+        case .idle, .syncing:
+            return .secondary
+        case .succeeded:
+            return .green
+        case .failed:
+            return .red
+        case .disabled:
+            return .secondary
+        }
     }
 }
 
@@ -343,9 +401,11 @@ private struct VocabCardRow: View {
 #Preview("With Cards") {
     VocabListView()
         .modelContainer(PreviewSampleData.previewModelContainer)
+        .environment(SyncCoordinator.preview)
 }
 
 #Preview("Empty") {
     VocabListView()
         .modelContainer(for: VocabCard.self, inMemory: true)
+        .environment(SyncCoordinator.preview)
 }
