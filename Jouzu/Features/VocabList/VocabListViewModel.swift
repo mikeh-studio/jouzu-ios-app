@@ -69,6 +69,7 @@ final class VocabListViewModel {
     private static let maxRowCount = 5_000
 
     func importCSV(from url: URL, context: ModelContext) -> ImportResult {
+        let ownerId = AppUserIdentity.currentOwnerId()
         let gotAccess = url.startAccessingSecurityScopedResource()
         defer {
             if gotAccess { url.stopAccessingSecurityScopedResource() }
@@ -117,6 +118,7 @@ final class VocabListViewModel {
             let word = fields[0].trimmingCharacters(in: .whitespaces)
             let reading = fields[1].trimmingCharacters(in: .whitespaces)
             let definition = fields[2].trimmingCharacters(in: .whitespaces)
+            let deckName = "Default"
 
             guard !word.isEmpty else {
                 errors.append("Row \(i + 1): word is empty.")
@@ -124,9 +126,16 @@ final class VocabListViewModel {
             }
 
             // Check for duplicate
-            let descriptor = FetchDescriptor<VocabCard>(predicate: #Predicate { $0.word == word })
-            let existingCount = (try? context.fetchCount(descriptor)) ?? 0
-            if existingCount > 0 {
+            let descriptor = FetchDescriptor<VocabCard>(
+                predicate: #Predicate {
+                    $0.word == word &&
+                    $0.reading == reading &&
+                    $0.deckName == deckName &&
+                    $0.deletedAt == nil
+                }
+            )
+            let existingCards = (try? context.fetch(descriptor)) ?? []
+            if existingCards.contains(where: { $0.resolvedOwnerId == ownerId }) {
                 skipped += 1
                 continue
             }
@@ -136,7 +145,9 @@ final class VocabListViewModel {
                 reading: reading,
                 definition: definition,
                 partOfSpeech: "",
-                exampleSentence: nil
+                exampleSentence: nil,
+                deckName: deckName,
+                source: "csv_import"
             )
             context.insert(card)
             imported += 1
@@ -144,6 +155,10 @@ final class VocabListViewModel {
 
         if rowsSkippedByLimit > 0 {
             errors.append("File contained \(lines.count - startIndex) rows; only the first \(Self.maxRowCount) were imported.")
+        }
+
+        if imported > 0 {
+            try? context.save()
         }
 
         return ImportResult(importedCount: imported, skippedCount: skipped, errors: errors)

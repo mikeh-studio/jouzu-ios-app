@@ -217,6 +217,33 @@ final class AnalysisTextFormatterTests: XCTestCase {
     }
 }
 
+final class VocabCardSyncMetadataTests: XCTestCase {
+    func testEnsureSyncMetadataBackfillsMissingSyncFields() {
+        let originalDate = Date(timeIntervalSince1970: 1_712_345_678)
+        let card = VocabCard(
+            id: nil,
+            ownerId: nil,
+            word: "猫",
+            reading: "ねこ",
+            definition: "cat",
+            partOfSpeech: "Noun",
+            dateCreated: originalDate
+        )
+        card.createdAt = nil
+        card.updatedAt = nil
+        card.syncStateRaw = nil
+
+        let didChange = card.ensureSyncMetadata(defaultOwnerId: "owner-123")
+
+        XCTAssertTrue(didChange)
+        XCTAssertEqual(card.ownerId, "owner-123")
+        XCTAssertNotNil(card.id)
+        XCTAssertEqual(card.createdAt, originalDate)
+        XCTAssertEqual(card.updatedAt, originalDate)
+        XCTAssertEqual(card.syncState, .pendingCreate)
+    }
+}
+
 @MainActor
 final class AnalysisViewModelTests: XCTestCase {
     func testTranslationLifecycleTransitionsWithoutBlockingResult() {

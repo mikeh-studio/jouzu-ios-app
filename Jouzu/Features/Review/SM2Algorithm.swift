@@ -109,5 +109,6 @@ extension VocabCard {
             value: result.interval,
             to: Date()
         ) ?? Date()
+        markUpdated()
     }
 }

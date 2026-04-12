@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Jouzu is an iOS app for Japanese language learning. Users photograph Japanese text, which is OCR'd, tokenized, and enriched with dictionary/grammar data. Vocabulary can be saved to a spaced-repetition review system (SM-2 algorithm).
+Jouzu is an iOS app for Japanese language learning. Users photograph Japanese text, which is OCR'd, tokenized, and enriched with dictionary/grammar data. Vocabulary can be saved to a spaced-repetition review system (SM-2 algorithm), and the app now includes a config-gated sync foundation for future Google Sheet syncing.
 
 ## Build & Run
 
@@ -43,8 +43,9 @@ Image capture -> `OCRService` (Vision) -> `TokenizerService` (MeCab) -> `Diction
 
 - `Jouzu/App/` - App entry point (`JouzuApp.swift`) and root `ContentView` (3-tab TabView: Camera, Vocabulary, Review)
 - `Jouzu/Features/` - Feature modules: `Camera/`, `Analysis/`, `Review/`, `VocabList/`
-- `Jouzu/Models/` - `VocabCard` (SwiftData), `Token`, `AnalysisResult`, preview sample data
-- `Jouzu/Services/` - `OCRService`, `TokenizerService`, `DictionaryService`, `GrammarService`
+- `Jouzu/Features/Sync/` - Sync status UI shown from the Vocabulary screen
+- `Jouzu/Models/` - `VocabCard` (SwiftData + sync metadata), `Token`, `AnalysisResult`, preview sample data
+- `Jouzu/Services/` - `OCRService`, `TokenizerService`, `DictionaryService`, `GrammarService`, `GoogleSheetSyncService`, `AppUserIdentity`
 - `JouzuTests/` - Unit tests (SM-2 algorithm coverage)
 
 ### Important Patterns
@@ -54,9 +55,14 @@ Image capture -> `OCRService` (Vision) -> `TokenizerService` (MeCab) -> `Diction
 - `Token.PartOfSpeech` enum uses Japanese labels (for example `名詞`, `動詞`) matching MeCab output
 - Grammar highlighting is color-coded by part of speech
 - `PreviewSampleData.swift` provides factory functions and an in-memory `ModelContainer` for previews
+- Sync is local-first and config-gated; without sync config, the UI should remain disabled rather than attempting network requests
 
 ## Configuration
 
 - `project.yml` - XcodeGen project spec (bundle ID: `com.jouzu.app`)
 - Portrait orientation only
 - Camera and photo library permissions declared in `project.yml` Info.plist settings
+- Google Sheet sync config keys live in `Jouzu/Info.plist`:
+  - `GOOGLE_SHEET_SYNC_BASE_URL`
+  - `GOOGLE_SHEET_SYNC_API_KEY`
+- Do not commit real sync secrets; keep committed values empty and use local overrides when testing a live backend

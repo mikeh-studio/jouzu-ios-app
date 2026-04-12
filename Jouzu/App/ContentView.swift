@@ -33,4 +33,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .modelContainer(PreviewSampleData.previewModelContainer)
+        .environment(SyncCoordinator.preview)
 }

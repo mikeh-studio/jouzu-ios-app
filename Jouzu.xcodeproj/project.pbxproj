@@ -14,6 +14,7 @@
 		327895FC0BFDD871D3195562 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87EA8EA6A5F9792FCC0AA854 /* CameraView.swift */; };
 		3CF18CE03E639822AA96017E /* GrammarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD5E6D56AFEE4F3D9FE8CBC /* GrammarService.swift */; };
 		3E8BB2B5F26266AC37B53874 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2ACA2581DEE7EB790D9623 /* CameraViewModel.swift */; };
+		4123ABCD5678EF901234ABCD /* AppUserIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4123ABCD5678EF901234ABCE /* AppUserIdentity.swift */; };
 		482CEA492274CC6C7123D437 /* PreviewSampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F3D741BCA5000471A41761 /* PreviewSampleData.swift */; };
 		9346AF801297CD1540779DE2 /* JouzuApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE897B3247E84A3F958704D /* JouzuApp.swift */; };
 		AAE25E5F4F726FFA6248C1D2 /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D9FB00229B1C89104AEB1A /* OCRService.swift */; };
@@ -34,6 +35,8 @@
 		FA57B6913265C76E33591E97 /* VocabCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7549F9B07DCA828CC043F0 /* VocabCard.swift */; };
 		FE843FC6EED2B6A3B9E25483 /* ReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C5DCE6FB7F788D8A3DA183 /* ReviewViewModel.swift */; };
 		FE84B10FFA450C26C0E61A57 /* VocabListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FD909C9C16F66ACECB876B /* VocabListViewModel.swift */; };
+		9A12BC34DE56F7890123ABCD /* GoogleSheetSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A12BC34DE56F7890123ABCE /* GoogleSheetSyncService.swift */; };
+		7A89BC01DE23F4567890ABCD /* SyncStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A89BC01DE23F4567890ABCE /* SyncStatusView.swift */; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* VocabDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F2A3 /* VocabDetailView.swift */; };
 		F1A2B3C4D5E6F708192A3B4C /* ScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F708192A3B4D /* ScreenshotTests.swift */; };
 /* End PBXBuildFile section */
@@ -57,6 +60,7 @@
 		18BA1D562B9FCE55A91A5B85 /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
 		37D9F200CD178A24005A85C5 /* SM2AlgorithmTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SM2AlgorithmTests.swift; sourceTree = "<group>"; };
 		37FD909C9C16F66ACECB876B /* VocabListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabListViewModel.swift; sourceTree = "<group>"; };
+		4123ABCD5678EF901234ABCE /* AppUserIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUserIdentity.swift; sourceTree = "<group>"; };
 		487A64D1B8D087B00C36A3F4 /* DictionaryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryService.swift; sourceTree = "<group>"; };
 		5BA26CF56CB6387BB6B415DB /* JouzuTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = JouzuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C7549F9B07DCA828CC043F0 /* VocabCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabCard.swift; sourceTree = "<group>"; };
@@ -66,10 +70,12 @@
 		63EF1FB8397772F138E7AAA8 /* TokenizerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenizerService.swift; sourceTree = "<group>"; };
 		646DAC140834EA33CF4DED91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		6894F77B3E9FA950DEE1CC15 /* AnalysisResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisResult.swift; sourceTree = "<group>"; };
+		7A89BC01DE23F4567890ABCE /* SyncStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStatusView.swift; sourceTree = "<group>"; };
 		78F3D741BCA5000471A41761 /* PreviewSampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSampleData.swift; sourceTree = "<group>"; };
 		7BD5E6D56AFEE4F3D9FE8CBC /* GrammarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrammarService.swift; sourceTree = "<group>"; };
 		87EA8EA6A5F9792FCC0AA854 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		8AE897B3247E84A3F958704D /* JouzuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JouzuApp.swift; sourceTree = "<group>"; };
+		9A12BC34DE56F7890123ABCE /* GoogleSheetSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSheetSyncService.swift; sourceTree = "<group>"; };
 		9386D8895A66181338C95408 /* AnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisView.swift; sourceTree = "<group>"; };
 		94B6E142A4A190DD20E47727 /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		A19B7343725667BF55DFF9DF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -117,7 +123,9 @@
 		345E0EFB37D7FB3F4A629F40 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				4123ABCD5678EF901234ABCE /* AppUserIdentity.swift */,
 				487A64D1B8D087B00C36A3F4 /* DictionaryService.swift */,
+				9A12BC34DE56F7890123ABCE /* GoogleSheetSyncService.swift */,
 				7BD5E6D56AFEE4F3D9FE8CBC /* GrammarService.swift */,
 				60D9FB00229B1C89104AEB1A /* OCRService.swift */,
 				63EF1FB8397772F138E7AAA8 /* TokenizerService.swift */,
@@ -178,9 +186,18 @@
 				2292D9CD1BDB8C241B08DB4D /* Analysis */,
 				1C1C2C0DA44C4350AF1DCB84 /* Camera */,
 				F6CF5D0757B053DE090F0673 /* Review */,
+				9B3C4D5E6F708192A3B4C5D6 /* Sync */,
 				5E532DEA8A63EC651D17E722 /* VocabList */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		9B3C4D5E6F708192A3B4C5D6 /* Sync */ = {
+			isa = PBXGroup;
+			children = (
+				7A89BC01DE23F4567890ABCE /* SyncStatusView.swift */,
+			);
+			path = Sync;
 			sourceTree = "<group>";
 		};
 		B1B258E8A059F88E16555D79 /* Jouzu */ = {
@@ -319,10 +336,12 @@
 				0E0F5BF2C9779FF68198E586 /* AnalysisResult.swift in Sources */,
 				AE55469CBE0D9F6F8D6A7732 /* AnalysisView.swift in Sources */,
 				D1BDDA82492A90D32F1F46B4 /* AnalysisViewModel.swift in Sources */,
+				4123ABCD5678EF901234ABCD /* AppUserIdentity.swift in Sources */,
 				327895FC0BFDD871D3195562 /* CameraView.swift in Sources */,
 				3E8BB2B5F26266AC37B53874 /* CameraViewModel.swift in Sources */,
 				B7E49857D020C3BD1A25E583 /* ContentView.swift in Sources */,
 				AC767FBE2235706D76A8BDE3 /* DictionaryService.swift in Sources */,
+				9A12BC34DE56F7890123ABCD /* GoogleSheetSyncService.swift in Sources */,
 				B6A819111DE684296A71E047 /* GrammarHighlighter.swift in Sources */,
 				3CF18CE03E639822AA96017E /* GrammarService.swift in Sources */,
 				9346AF801297CD1540779DE2 /* JouzuApp.swift in Sources */,
@@ -332,6 +351,7 @@
 				FE843FC6EED2B6A3B9E25483 /* ReviewViewModel.swift in Sources */,
 				D8E4C0A1B2C3D4E5F6071829 /* ScreenshotSupport.swift in Sources */,
 				B5AE12D7ED12891AB8A3078A /* SM2Algorithm.swift in Sources */,
+				7A89BC01DE23F4567890ABCD /* SyncStatusView.swift in Sources */,
 				D4B420C43678712E11E2369E /* Token.swift in Sources */,
 				B4FEF23A95153C6B17141805 /* TokenizerService.swift in Sources */,
 				FA57B6913265C76E33591E97 /* VocabCard.swift in Sources */,

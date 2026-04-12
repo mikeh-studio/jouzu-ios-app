@@ -4,6 +4,7 @@ import SwiftData
 struct VocabDetailView: View {
     let card: VocabCard
     @Environment(\.modelContext) private var modelContext
+    @Environment(SyncCoordinator.self) private var syncCoordinator
     @State private var isEditingExample = false
     @State private var exampleDraft = ""
 
@@ -117,8 +118,12 @@ struct VocabDetailView: View {
                     Button("Save") {
                         let trimmed = exampleDraft.trimmingCharacters(in: .whitespacesAndNewlines)
                         card.exampleSentence = trimmed.isEmpty ? nil : trimmed
+                        card.markUpdated()
                         isEditingExample = false
                         try? modelContext.save()
+                        Task { @MainActor in
+                            await syncCoordinator.syncNow(context: modelContext)
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                 }

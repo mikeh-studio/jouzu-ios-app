@@ -5,6 +5,7 @@ struct ReviewView: View {
     @State private var viewModel = ReviewViewModel()
     private let loadsCardsOnAppear: Bool
     @Environment(\.modelContext) private var modelContext
+    @Environment(SyncCoordinator.self) private var syncCoordinator
 
     init(viewModel: ReviewViewModel = ReviewViewModel(), loadsCardsOnAppear: Bool = true) {
         _viewModel = State(initialValue: viewModel)
@@ -146,6 +147,10 @@ struct ReviewView: View {
                     withAnimation(.spring(duration: 0.3)) {
                         viewModel.rate(rating)
                     }
+                    try? modelContext.save()
+                    Task { @MainActor in
+                        await syncCoordinator.syncNow(context: modelContext)
+                    }
                 } label: {
                     VStack(spacing: 4) {
                         Text(rating.label)
@@ -245,9 +250,11 @@ struct ReviewView: View {
 #Preview("With Due Cards") {
     ReviewView()
         .modelContainer(PreviewSampleData.previewModelContainer)
+        .environment(SyncCoordinator.preview)
 }
 
 #Preview("Empty") {
     ReviewView()
         .modelContainer(for: VocabCard.self, inMemory: true)
+        .environment(SyncCoordinator.preview)
 }
