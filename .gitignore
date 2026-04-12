@@ -16,6 +16,7 @@ Pods/
 
 # Claude Code
 .claude/
+.gstack/
 
 # Misc
 *.ipa
